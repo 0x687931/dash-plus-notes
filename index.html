@@ -309,7 +309,7 @@
             </div>
 
             <!-- Type Selector Floating Panel -->
-            <div id="typeSelectorPanel" class="hidden fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-64">
+            <div id="typeSelectorPanel" class="hidden fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-64 max-w-[90vw]">
                 <div class="p-2 space-y-1">
                     <button onclick="setNewTaskType('task')" id="typeBtn-task" class="w-full px-4 py-3 text-left rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900 transition-colors flex items-center gap-2">
                         <span class="text-lg">📝</span>
@@ -512,7 +512,11 @@
             </button>
 
             <!-- Details Panel -->
-            <div id="detailsPanelContainer" class="fixed right-0 top-[57px] bottom-0 w-full md:w-[30%] flex flex-col bg-white dark:bg-gray-900 border-t md:border-t-0 border-l border-gray-200 dark:border-gray-700 transition-transform duration-300 ease-in-out z-30">
+            <div id="detailsPanelContainer" class="fixed bottom-0 left-0 right-0 md:right-0 md:left-auto md:top-[57px] md:bottom-0 w-full md:w-[30%] h-[60vh] md:h-auto flex flex-col bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 md:border-l rounded-t-2xl md:rounded-none transition-transform duration-300 ease-in-out z-30 shadow-2xl md:shadow-none">
+                <!-- Mobile Bottom Sheet Handle -->
+                <div class="md:hidden flex justify-center pt-2 pb-1">
+                    <div class="w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                </div>
                 <div class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" onclick="toggleDetails()">
                     <h2 class="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase">Details</h2>
                     <span id="detailsToggle" class="text-gray-400 dark:text-gray-500 transition-all duration-300">▶</span>
@@ -2239,13 +2243,12 @@
 
             row.innerHTML = `
                 <div class="flex flex-col md:grid md:grid-cols-12 gap-2 items-start md:items-center">
-                    <div class="md:col-span-1 flex md:block items-center gap-2 w-full md:w-auto">
-                        <span class="text-gray-400 cursor-move mr-1" title="Drag to reorder">⠿</span>
+                    <div class="md:col-span-1 flex items-center gap-2 w-full md:w-auto">
+                        <span class="hidden md:inline text-gray-400 cursor-move mr-1" title="Drag to reorder">⠿</span>
                         ${task.priority && task.priority !== 'none' ? `<span class="mr-1" title="Priority: ${priorityInfo.label}">${priorityInfo.icon}</span>` : ''}
                         <button onclick="event.stopPropagation(); cycleStatus('${task.id}')" class="text-lg font-mono text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 min-w-[44px] min-h-[44px] md:w-8 md:h-8 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-700" title="Click to cycle status">
                             ${symbol}
                         </button>
-                        <span class="md:hidden text-xs text-gray-500">${task.dueDate ? task.dueDate : ''}</span>
                     </div>
                     <div class="md:col-span-7 w-full">
                         <div class="flex items-center gap-2">
@@ -2308,6 +2311,32 @@
                             </div>
                         ` : ''}
                     </div>
+                    <!-- Mobile: Due date and actions in footer -->
+                    <div class="md:hidden w-full flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700 mt-2">
+                        <div class="flex-1" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'dueDate', ${index})">
+                            ${isEditing && state.editingField === 'dueDate' ? `
+                                <input
+                                    type="text"
+                                    id="editInput"
+                                    value="${task.dueDate || ''}"
+                                    onblur="finishEditing('${task.id}', 'dueDate', this.value)"
+                                    onkeydown="if(event.key==='Enter') { finishEditing('${task.id}', 'dueDate', this.value); } if(event.key==='Escape') { cancelEditing(); }"
+                                    class="w-full px-2 py-1 text-sm bg-white dark:bg-gray-900 border border-primary-500 focus:ring-2 focus:ring-primary-500 rounded ${dueDateClass}"
+                                    placeholder="tomorrow, Q1..."
+                                />
+                            ` : `
+                                <div class="flex items-center gap-1 text-xs ${dueDateClass}">
+                                    <span class="text-gray-400">📅</span>
+                                    <span>${task.dueDate || '<span class="text-gray-400">No due date</span>'}</span>
+                                </div>
+                            `}
+                        </div>
+                        <button onclick="event.stopPropagation(); if(confirm('${TERMINOLOGY[state.terminology].archive}?')) archiveTask('${task.id}')" class="text-gray-400 hover:text-red-500 text-lg min-w-[44px] min-h-[44px] flex items-center justify-center" title="${TERMINOLOGY[state.terminology].archive}">
+                            🗑️
+                        </button>
+                    </div>
+
+                    <!-- Desktop: Due date and actions in columns -->
                     <div class="hidden md:block md:col-span-3" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'dueDate', ${index})">
                         ${isEditing && state.editingField === 'dueDate' ? `
                             <input
@@ -2426,8 +2455,21 @@
                 const trigger = document.getElementById('typeSelectorTrigger');
                 if (trigger) {
                     const rect = trigger.getBoundingClientRect();
-                    panel.style.top = `${rect.bottom + 8}px`;
-                    panel.style.right = `${window.innerWidth - rect.right}px`;
+                    const isMobile = window.innerWidth < 768;
+
+                    if (isMobile) {
+                        // Mobile: Center the panel horizontally, position below trigger with safe margins
+                        panel.style.top = `${Math.min(rect.bottom + 8, window.innerHeight - 400)}px`;
+                        panel.style.left = '50%';
+                        panel.style.transform = 'translateX(-50%)';
+                        panel.style.right = 'auto';
+                    } else {
+                        // Desktop: Position to the right of trigger
+                        panel.style.top = `${rect.bottom + 8}px`;
+                        panel.style.right = `${window.innerWidth - rect.right}px`;
+                        panel.style.left = 'auto';
+                        panel.style.transform = 'none';
+                    }
                 }
             } else {
                 panel.classList.add('hidden');
@@ -2852,16 +2894,29 @@ ${getRaidDetailsSection(task)}
 
             if (state.detailsExpanded) {
                 // Expanded: slide in
-                container.style.transform = 'translateX(0)';
-                toggle.textContent = '▶';
-                // Only push content on desktop, not on mobile
-                mainContent.style.marginRight = isMobile ? '0' : '30%';
+                if (isMobile) {
+                    // Mobile: slide up from bottom
+                    container.style.transform = 'translateY(0)';
+                    toggle.textContent = '▼';
+                } else {
+                    // Desktop: slide in from right
+                    container.style.transform = 'translateX(0)';
+                    toggle.textContent = '▶';
+                    mainContent.style.marginRight = '30%';
+                }
                 floatingToggle.classList.add('hidden');
             } else {
                 // Collapsed: slide out
-                container.style.transform = 'translateX(100%)';
-                toggle.textContent = '◀';
-                mainContent.style.marginRight = '0';
+                if (isMobile) {
+                    // Mobile: slide down to bottom (hidden)
+                    container.style.transform = 'translateY(100%)';
+                    toggle.textContent = '▲';
+                } else {
+                    // Desktop: slide out to right
+                    container.style.transform = 'translateX(100%)';
+                    toggle.textContent = '◀';
+                    mainContent.style.marginRight = '0';
+                }
                 floatingToggle.classList.remove('hidden');
             }
         }
