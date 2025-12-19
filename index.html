@@ -2897,7 +2897,7 @@ ${getRaidDetailsSection(task)}
                 if (isMobile) {
                     // Mobile: slide up from bottom
                     container.style.transform = 'translateY(0)';
-                    toggle.textContent = '▼';
+                    toggle.textContent = '▲';  // FIX: Up arrow means "hide/collapse"
                 } else {
                     // Desktop: slide in from right
                     container.style.transform = 'translateX(0)';
@@ -2910,7 +2910,7 @@ ${getRaidDetailsSection(task)}
                 if (isMobile) {
                     // Mobile: slide down to bottom (hidden)
                     container.style.transform = 'translateY(100%)';
-                    toggle.textContent = '▲';
+                    toggle.textContent = '▼';  // FIX: Down arrow means "show/expand"
                 } else {
                     // Desktop: slide out to right
                     container.style.transform = 'translateX(100%)';
