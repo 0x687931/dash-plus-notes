@@ -137,16 +137,132 @@
                 opacity: 0.8;
             }
         }
+
+        /* === PHASE 6: ACCESSIBILITY (WCAG 2.1 AA) === */
+
+        /* Focus indicators with proper contrast (WCAG requirement) */
+        *:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        .dark *:focus {
+            outline-color: #60a5fa;
+        }
+
+        *:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        .dark *:focus-visible {
+            outline-color: #60a5fa;
+        }
+
+        /* Skip links for keyboard navigation */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            z-index: 100;
+            border-radius: 0 0 4px 0;
+            font-weight: 600;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Loading skeleton animation */
+        @keyframes skeleton-loading {
+            0% { background-position: -200px 0; }
+            100% { background-position: calc(200px + 100%) 0; }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 0px, #e0e0e0 40px, #f0f0f0 80px);
+            background-size: 200px 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        .dark .skeleton {
+            background: linear-gradient(90deg, #374151 0px, #4b5563 40px, #374151 80px);
+        }
+
+        /* Screen reader only content */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Error states with WCAG AA contrast */
+        .error-border {
+            border: 2px solid #dc2626 !important;
+        }
+
+        .error-text {
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        .dark .error-text {
+            color: #f87171;
+        }
+
+        .error-bg {
+            background-color: #fee2e2;
+        }
+
+        .dark .error-bg {
+            background-color: #7f1d1d;
+        }
+
+        /* Loading spinner animation */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Respect user's motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            .skeleton,
+            .spinner {
+                animation: none;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <!-- Skip Links for Keyboard Navigation -->
+    <a href="#mainContent" class="skip-link">Skip to main content</a>
+    <a href="#taskTable" class="skip-link">Skip to task list</a>
+    <a href="#bottomNav" class="skip-link md:hidden">Skip to navigation</a>
+
+    <!-- Live Region for Screen Reader Announcements -->
+    <div id="announcements" role="status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
     <div class="h-screen flex flex-col">
         <!-- Mobile Header (< 768px) -->
-        <header class="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <header class="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700" role="banner">
             <div class="flex items-center justify-between h-14 px-4">
                 <!-- Left: Hamburger -->
-                <button onclick="toggleHamburgerMenu()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" title="Menu">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onclick="toggleHamburgerMenu()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" aria-label="Open menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
@@ -154,16 +270,16 @@
                 <!-- Center: Logo + Project -->
                 <div class="flex items-center gap-2">
                     <h1 class="text-base font-bold text-blue-600 dark:text-blue-400">dash-plus</h1>
-                    <button onclick="toggleProjectSelector()" id="currentProjectBtn" class="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded flex items-center gap-1">
+                    <button onclick="toggleProjectSelector()" id="currentProjectBtn" class="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded flex items-center gap-1" aria-label="Select project" aria-haspopup="true">
                         <span id="currentProjectName">Inbox</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </button>
                 </div>
 
                 <!-- Right: Settings -->
-                <button onclick="toggleMobileSettings()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" title="Settings">
+                <button onclick="toggleMobileSettings()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" aria-label="Open settings">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -173,7 +289,7 @@
         </header>
 
         <!-- Desktop Header (≥ 768px) -->
-        <header class="hidden md:block bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3">
+        <header class="hidden md:block bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3" role="banner">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <h1 class="text-xl font-bold text-blue-600 dark:text-blue-400">dash-plus</h1>
@@ -219,7 +335,7 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+        <main id="mainContent" class="flex-1 flex flex-col lg:flex-row overflow-hidden relative" role="main">
             <!-- Left Sidebar (Desktop ≥ 1024px) -->
             <aside id="leftSidebar" class="hidden lg:flex lg:w-60 flex-col bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700">
                 <!-- Project List -->
@@ -828,7 +944,7 @@
         </div>
 
         <!-- Bottom Navigation (Mobile) -->
-        <nav id="bottomNav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-40">
+        <nav id="bottomNav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-40" role="navigation" aria-label="Main navigation">
             <div class="grid grid-cols-4 h-16">
                 <button onclick="setBottomNavView('all')" data-nav="all" class="flex flex-col items-center justify-center gap-0.5 text-blue-600 dark:text-blue-400">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
