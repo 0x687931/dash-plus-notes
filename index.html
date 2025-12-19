@@ -59,6 +59,84 @@
                 padding-bottom: 80px;
             }
         }
+
+        /* Swipe gesture styles (mobile only) */
+        @media (max-width: 768px) {
+            .task-row-wrapper {
+                position: relative;
+                overflow: hidden;
+            }
+
+            .task-row {
+                position: relative;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 2;
+            }
+
+            .task-row.swiping {
+                transition: none;
+            }
+
+            .swipe-actions {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                display: flex;
+                align-items: stretch;
+                z-index: 1;
+            }
+
+            .swipe-actions-left {
+                left: 0;
+                justify-content: flex-start;
+            }
+
+            .swipe-actions-right {
+                right: 0;
+                justify-content: flex-end;
+            }
+
+            .swipe-action {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                width: 60px;
+                border: none;
+                font-size: 11px;
+                font-weight: 600;
+                color: white;
+                cursor: pointer;
+                transition: opacity 0.2s;
+            }
+
+            .swipe-action svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            .swipe-action-done {
+                background: #10b981;
+            }
+
+            .swipe-action-delete {
+                background: #ef4444;
+            }
+
+            .swipe-action-more {
+                background: #6b7280;
+            }
+
+            .swipe-action-status {
+                background: #3b82f6;
+                width: 80px;
+            }
+
+            .swipe-action:active {
+                opacity: 0.8;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
@@ -141,9 +219,68 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
-            <!-- Task List (Database View) -->
-            <div id="mainContent" class="w-full flex flex-col bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out">
+        <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+            <!-- Left Sidebar (Desktop ≥ 1024px) -->
+            <aside id="leftSidebar" class="hidden lg:flex lg:w-60 flex-col bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700">
+                <!-- Project List -->
+                <div class="flex-1 overflow-y-auto p-4">
+                    <div class="mb-6">
+                        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Projects</h3>
+                        <div id="sidebarProjectList" class="space-y-1"></div>
+                    </div>
+
+                    <!-- View Switcher -->
+                    <div class="mb-6">
+                        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Views</h3>
+                        <div class="space-y-1">
+                            <button onclick="switchToListView()" id="sidebarViewTasks" class="w-full text-left px-3 py-2 text-sm rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2">
+                                <span>☰</span> Tasks
+                            </button>
+                            <button onclick="switchToMatrixView()" id="sidebarViewMatrix" class="w-full text-left px-3 py-2 text-sm rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2">
+                                <span>⊞</span> Matrix
+                            </button>
+                            <button onclick="switchToRaidView()" id="sidebarViewRaid" class="w-full text-left px-3 py-2 text-sm rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2">
+                                <span>⚠</span> RAID
+                            </button>
+                            <button onclick="toggleArchivedView()" id="sidebarViewArchived" class="w-full text-left px-3 py-2 text-sm rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2">
+                                <span>🗄</span> Archived
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+                    <button id="sidebarTerminologyToggle" class="w-full px-3 py-2 text-xs font-mono bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded text-left" title="Toggle terminology">
+                        <span id="sidebarTermLabel">-+</span> Terminology
+                    </button>
+                    <button id="sidebarThemeToggle" class="w-full mt-2 px-3 py-2 text-sm bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded text-left" title="Toggle theme">
+                        <span class="inline dark:hidden">☀️ Light</span>
+                        <span class="hidden dark:inline">🌙 Dark</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Center Column (Task List) -->
+            <div id="mainContent" class="w-full lg:flex-1 flex flex-col bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out">
+                <!-- Bulk Actions Toolbar (shown when items selected) -->
+                <div id="bulkActionsToolbar" class="hidden px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
+                    <div class="flex items-center justify-between">
+                        <span id="selectedCount" class="text-sm font-medium text-blue-700 dark:text-blue-300">0 selected</span>
+                        <div class="flex gap-2">
+                            <button onclick="bulkMarkDone()" class="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded">
+                                Mark Done
+                            </button>
+                            <button onclick="bulkArchive()" class="px-3 py-1 text-xs bg-gray-600 hover:bg-gray-700 text-white rounded">
+                                Archive
+                            </button>
+                            <button onclick="clearSelection()" class="px-3 py-1 text-xs bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 rounded">
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Search Bar -->
                 <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                     <input
@@ -159,7 +296,20 @@
                 <div id="viewFilter" class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:border-gray-900/50"></div>
 
                 <!-- Table Header -->
-                <div class="hidden md:block px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                <div class="hidden lg:block px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                    <div class="grid grid-cols-12 gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                        <div class="col-span-1 flex items-center">
+                            <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll()" class="w-4 h-4 rounded border-gray-300 dark:border-gray-600" title="Select all">
+                        </div>
+                        <div class="col-span-6">Task</div>
+                        <div class="col-span-2">Status</div>
+                        <div class="col-span-2">Due Date</div>
+                        <div class="col-span-1">Actions</div>
+                    </div>
+                </div>
+
+                <!-- Table Header (Mobile/Tablet without checkbox) -->
+                <div class="block lg:hidden md:block px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
                     <div class="grid grid-cols-12 gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                         <div class="col-span-1">Status</div>
                         <div class="col-span-7">Task</div>
@@ -540,10 +690,13 @@
                 <span class="text-gray-600 dark:text-gray-400 text-lg">◀</span>
             </button>
 
+            <!-- Mobile Bottom Sheet Backdrop -->
+            <div id="detailsBackdrop" class="md:hidden fixed inset-0 bg-black transition-opacity duration-300 pointer-events-none opacity-0 z-20" onclick="closeBottomSheet()"></div>
+
             <!-- Details Panel -->
-            <div id="detailsPanelContainer" class="fixed bottom-0 left-0 right-0 md:right-0 md:left-auto md:top-[57px] md:bottom-0 w-full md:w-[30%] h-[60vh] md:h-auto flex flex-col bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 md:border-l rounded-t-2xl md:rounded-none transition-transform duration-300 ease-in-out z-30 shadow-2xl md:shadow-none">
+            <div id="detailsPanelContainer" class="fixed bottom-0 left-0 right-0 lg:relative lg:top-0 lg:bottom-0 w-full lg:w-90 h-[60vh] lg:h-auto flex flex-col bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 lg:border-l lg:border-t-0 rounded-t-2xl lg:rounded-none z-30 lg:shadow-none" style="transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
                 <!-- Mobile Bottom Sheet Handle -->
-                <div class="md:hidden flex justify-center pt-2 pb-1">
+                <div id="bottomSheetHandle" class="md:hidden flex justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing" style="touch-action: none;">
                     <div class="w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
                 </div>
                 <div class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" onclick="toggleDetails()">
@@ -765,7 +918,20 @@
             fabMenuOpen: false,
             bottomNavView: 'all', // 'all', 'active', 'matrix', 'more'
             projectSelectorOpen: false,
-            mobileSettingsOpen: false
+            mobileSettingsOpen: false,
+            // Touch/swipe gesture tracking
+            touchStartX: 0,
+            touchStartY: 0,
+            touchStartTime: 0,
+            swipingTaskId: null,
+            swipeDirection: null, // 'left' or 'right'
+            // Mobile bottom sheet state (for details panel)
+            bottomSheetState: 'collapsed', // 'collapsed', 'half', 'full'
+            bottomSheetDragging: false,
+            bottomSheetStartY: 0,
+            bottomSheetCurrentY: 0,
+            // Multi-select state
+            selectedTaskIds: new Set()
         };
 
         const SYMBOLS = {
@@ -1118,6 +1284,95 @@
                 save();
                 render();
             }
+        }
+
+        // Multi-select Functions
+        function toggleTaskSelection(taskId) {
+            if (state.selectedTaskIds.has(taskId)) {
+                state.selectedTaskIds.delete(taskId);
+            } else {
+                state.selectedTaskIds.add(taskId);
+            }
+            updateBulkActionsToolbar();
+            updateSelectAllCheckbox();
+        }
+
+        function toggleSelectAll() {
+            const tasks = getTasks();
+            if (state.selectedTaskIds.size === tasks.length) {
+                // Deselect all
+                state.selectedTaskIds.clear();
+            } else {
+                // Select all
+                state.selectedTaskIds = new Set(tasks.map(t => t.id));
+            }
+            updateBulkActionsToolbar();
+            render();
+        }
+
+        function clearSelection() {
+            state.selectedTaskIds.clear();
+            updateBulkActionsToolbar();
+            render();
+        }
+
+        function updateBulkActionsToolbar() {
+            const toolbar = document.getElementById('bulkActionsToolbar');
+            const selectedCount = document.getElementById('selectedCount');
+
+            if (state.selectedTaskIds.size > 0) {
+                toolbar?.classList.remove('hidden');
+                if (selectedCount) {
+                    selectedCount.textContent = `${state.selectedTaskIds.size} selected`;
+                }
+            } else {
+                toolbar?.classList.add('hidden');
+            }
+
+            // Update checkboxes
+            document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+                const taskId = checkbox.dataset.taskId;
+                checkbox.checked = state.selectedTaskIds.has(taskId);
+            });
+        }
+
+        function updateSelectAllCheckbox() {
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            if (selectAllCheckbox) {
+                const tasks = getTasks();
+                selectAllCheckbox.checked = tasks.length > 0 && state.selectedTaskIds.size === tasks.length;
+                selectAllCheckbox.indeterminate = state.selectedTaskIds.size > 0 && state.selectedTaskIds.size < tasks.length;
+            }
+        }
+
+        function bulkMarkDone() {
+            if (state.selectedTaskIds.size === 0) return;
+
+            state.selectedTaskIds.forEach(taskId => {
+                const task = getProject().tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.status = task.status === 'done' ? 'active' : 'done';
+                    if (task.status === 'done') {
+                        task.completedAt = new Date().toISOString();
+                    }
+                }
+            });
+
+            clearSelection();
+            save();
+            render();
+        }
+
+        function bulkArchive() {
+            if (state.selectedTaskIds.size === 0) return;
+
+            if (!confirm(`Archive ${state.selectedTaskIds.size} task(s)?`)) return;
+
+            state.selectedTaskIds.forEach(taskId => {
+                archiveTask(taskId);
+            });
+
+            clearSelection();
         }
 
         // RAID Conversion Functions
@@ -1526,9 +1781,74 @@
         }
 
         // Rendering
+        function renderSidebar() {
+            // Render sidebar project list
+            const sidebarProjectList = document.getElementById('sidebarProjectList');
+            if (sidebarProjectList) {
+                const projects = Object.keys(state.projects).map(id => ({
+                    id,
+                    name: state.projects[id].name,
+                    taskCount: Object.values(state.projects[id].tasks || {}).filter(t => !t.archived && t.status !== 'done').length
+                }));
+
+                sidebarProjectList.innerHTML = projects.map(proj => {
+                    const isActive = proj.id === state.currentProject;
+                    return `
+                        <button onclick="switchProject('${proj.id}')" class="w-full text-left px-3 py-2 text-sm rounded ${isActive ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-medium' : 'hover:bg-gray-200 dark:hover:bg-gray-800'} flex items-center justify-between">
+                            <span>${esc(proj.name)}</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">${proj.taskCount}</span>
+                        </button>
+                    `;
+                }).join('');
+            }
+
+            // Update view buttons active state
+            const sidebarViewTasks = document.getElementById('sidebarViewTasks');
+            const sidebarViewMatrix = document.getElementById('sidebarViewMatrix');
+            const sidebarViewRaid = document.getElementById('sidebarViewRaid');
+            const sidebarViewArchived = document.getElementById('sidebarViewArchived');
+
+            const activeClass = 'bg-gray-300 dark:bg-gray-700 font-medium';
+            const inactiveClass = 'bg-transparent';
+
+            sidebarViewTasks?.classList.toggle(activeClass, !state.showMatrixView && !state.showRaidView && !state.showArchived);
+            sidebarViewMatrix?.classList.toggle(activeClass, state.showMatrixView);
+            sidebarViewRaid?.classList.toggle(activeClass, state.showRaidView);
+            sidebarViewArchived?.classList.toggle(activeClass, state.showArchived);
+
+            // Sync terminology toggle
+            const sidebarTermLabel = document.getElementById('sidebarTermLabel');
+            const headerTermLabel = document.getElementById('termLabel');
+            if (sidebarTermLabel && headerTermLabel) {
+                sidebarTermLabel.textContent = headerTermLabel.textContent;
+            }
+        }
+
+        function switchToListView() {
+            state.showMatrixView = false;
+            state.showRaidView = false;
+            state.showArchived = false;
+            render();
+        }
+
+        function switchToMatrixView() {
+            state.showMatrixView = true;
+            state.showRaidView = false;
+            state.showArchived = false;
+            render();
+        }
+
+        function switchToRaidView() {
+            state.showMatrixView = false;
+            state.showRaidView = true;
+            state.showArchived = false;
+            render();
+        }
+
         function render() {
             renderProjects();
             renderViewFilter();
+            renderSidebar();
 
             // Toggle between list, matrix, and RAID views
             const taskTable = document.getElementById('taskTable');
@@ -1555,6 +1875,8 @@
             renderDetails();
             updateActionBar();
             updateArchivedCount();
+            updateBulkActionsToolbar();
+            updateSelectAllCheckbox();
         }
 
         function renderViewFilter() {
@@ -2222,6 +2544,10 @@
             if (index !== -1) {
                 state.selectedIndex = index;
                 render();
+                const isMobile = window.innerWidth < 768;
+                if (isMobile && state.bottomSheetState === 'collapsed') {
+                    openBottomSheetToHalf();
+                }
             }
         }
 
@@ -2404,14 +2730,19 @@
 
             row.innerHTML = `
                 <div class="flex flex-col md:grid md:grid-cols-12 gap-2 items-start md:items-center">
-                    <div class="md:col-span-1 flex items-center gap-2 w-full md:w-auto">
+                    <!-- Checkbox (Desktop only) -->
+                    <div class="hidden lg:flex lg:col-span-1 items-center">
+                        <input type="checkbox" class="task-checkbox w-4 h-4 rounded border-gray-300 dark:border-gray-600" data-task-id="${task.id}" onclick="event.stopPropagation(); toggleTaskSelection('${task.id}')" title="Select task">
+                    </div>
+                    <!-- Status and Priority (Mobile visible, Desktop col-span-2 on lg) -->
+                    <div class="md:col-span-1 lg:col-span-2 flex items-center gap-2 w-full md:w-auto">
                         <span class="hidden md:inline text-gray-400 cursor-move mr-1" title="Drag to reorder">⠿</span>
                         ${task.priority && task.priority !== 'none' ? `<span class="mr-1" title="Priority: ${priorityInfo.label}">${priorityInfo.icon}</span>` : ''}
                         <button onclick="event.stopPropagation(); cycleStatus('${task.id}')" class="text-lg font-mono text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 min-w-[44px] min-h-[44px] md:w-8 md:h-8 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-700" title="Click to cycle status">
                             ${symbol}
                         </button>
                     </div>
-                    <div class="md:col-span-7 w-full">
+                    <div class="md:col-span-7 lg:col-span-6 w-full">
                         <div class="flex items-center gap-2">
                             ${isEditing && state.editingField === 'content' ? `
                                 <input
@@ -2498,7 +2829,7 @@
                     </div>
 
                     <!-- Desktop: Due date and actions in columns -->
-                    <div class="hidden md:block md:col-span-3" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'dueDate', ${index})">
+                    <div class="hidden md:block md:col-span-3 lg:col-span-2" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'dueDate', ${index})">
                         ${isEditing && state.editingField === 'dueDate' ? `
                             <input
                                 type="text"
@@ -2513,7 +2844,7 @@
                             <div class="px-2 py-1 text-sm cursor-text ${dueDateClass}">${task.dueDate || '<span class="text-gray-400">-</span>'}</div>
                         `}
                     </div>
-                    <div class="hidden md:block md:col-span-1">
+                    <div class="hidden md:block md:col-span-1 lg:col-span-1">
                         <button onclick="event.stopPropagation(); if(confirm('${TERMINOLOGY[state.terminology].archive}?')) archiveTask('${task.id}')" class="text-gray-400 hover:text-red-500 text-sm min-w-[44px] min-h-[44px] flex items-center justify-center" title="${TERMINOLOGY[state.terminology].archive}">
                             ×
                         </button>
@@ -3199,43 +3530,170 @@ ${getRaidDetailsSection(task)}
             }
         }
 
+        function setBottomSheetState(newState) {
+            const isMobile = window.innerWidth < 768;
+            if (!isMobile) return;
+            state.bottomSheetState = newState;
+            const container = document.getElementById('detailsPanelContainer');
+            const backdrop = document.getElementById('detailsBackdrop');
+            if (newState === 'collapsed') {
+                container.style.height = '60vh';
+                container.style.transform = 'translateY(100%)';
+                backdrop.style.opacity = '0';
+                backdrop.style.pointerEvents = 'none';
+            } else if (newState === 'half') {
+                container.style.height = '60vh';
+                container.style.transform = 'translateY(0)';
+                backdrop.style.opacity = '0.5';
+                backdrop.style.pointerEvents = 'auto';
+            } else if (newState === 'full') {
+                container.style.height = '100vh';
+                container.style.transform = 'translateY(0)';
+                backdrop.style.opacity = '0.5';
+                backdrop.style.pointerEvents = 'auto';
+            }
+        }
+
+        function closeBottomSheet() {
+            setBottomSheetState('collapsed');
+            state.detailsExpanded = false;
+        }
+
+        function openBottomSheetToHalf() {
+            setBottomSheetState('half');
+            state.detailsExpanded = true;
+        }
+
+        function openBottomSheetToFull() {
+            setBottomSheetState('full');
+            state.detailsExpanded = true;
+        }
+
         function toggleDetails() {
+            const isMobile = window.innerWidth < 768;
+            if (isMobile) {
+                if (state.bottomSheetState === 'collapsed') {
+                    openBottomSheetToHalf();
+                } else if (state.bottomSheetState === 'half') {
+                    openBottomSheetToFull();
+                } else {
+                    closeBottomSheet();
+                }
+                return;
+            }
             state.detailsExpanded = !state.detailsExpanded;
             const container = document.getElementById('detailsPanelContainer');
             const toggle = document.getElementById('detailsToggle');
             const mainContent = document.getElementById('mainContent');
             const floatingToggle = document.getElementById('floatingDetailsToggle');
 
-            // Detect if mobile (< 768px)
-            const isMobile = window.innerWidth < 768;
-
             if (state.detailsExpanded) {
-                // Expanded: slide in
-                if (isMobile) {
-                    // Mobile: slide up from bottom
-                    container.style.transform = 'translateY(0)';
-                    toggle.textContent = '▲';  // FIX: Up arrow means "hide/collapse"
-                } else {
-                    // Desktop: slide in from right
-                    container.style.transform = 'translateX(0)';
-                    toggle.textContent = '▶';
-                    mainContent.style.marginRight = '30%';
-                }
+                container.style.transform = 'translateX(0)';
+                toggle.textContent = '▶';
+                mainContent.style.marginRight = '30%';
                 floatingToggle.classList.add('hidden');
             } else {
-                // Collapsed: slide out
-                if (isMobile) {
-                    // Mobile: slide down to bottom (hidden)
-                    container.style.transform = 'translateY(100%)';
-                    toggle.textContent = '▼';  // FIX: Down arrow means "show/expand"
-                } else {
-                    // Desktop: slide out to right
-                    container.style.transform = 'translateX(100%)';
-                    toggle.textContent = '◀';
-                    mainContent.style.marginRight = '0';
-                }
+                container.style.transform = 'translateX(100%)';
+                toggle.textContent = '◀';
+                mainContent.style.marginRight = '0';
                 floatingToggle.classList.remove('hidden');
             }
+        }
+
+        function initBottomSheetDrag() {
+            const handle = document.getElementById('bottomSheetHandle');
+            const container = document.getElementById('detailsPanelContainer');
+            let startY = 0;
+            let startHeight = 0;
+            let isDragging = false;
+
+            function onTouchStart(e) {
+                const isMobile = window.innerWidth < 768;
+                if (!isMobile || state.bottomSheetState === 'collapsed') return;
+                isDragging = true;
+                startY = e.touches[0].clientY;
+                startHeight = container.offsetHeight;
+                state.bottomSheetDragging = true;
+                container.style.transition = 'none';
+            }
+
+            function onTouchMove(e) {
+                if (!isDragging) return;
+                const currentY = e.touches[0].clientY;
+                const deltaY = currentY - startY;
+                const newHeight = startHeight - deltaY;
+                const windowHeight = window.innerHeight;
+                const clampedHeight = Math.max(0, Math.min(windowHeight, newHeight));
+                container.style.height = `${clampedHeight}px`;
+                const backdrop = document.getElementById('detailsBackdrop');
+                const opacity = Math.min(0.5, (clampedHeight / windowHeight) * 0.5);
+                backdrop.style.opacity = opacity.toString();
+                e.preventDefault();
+            }
+
+            function onTouchEnd(e) {
+                if (!isDragging) return;
+                isDragging = false;
+                state.bottomSheetDragging = false;
+                container.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                const finalHeight = container.offsetHeight;
+                const windowHeight = window.innerHeight;
+                const heightPercent = (finalHeight / windowHeight) * 100;
+                if (heightPercent < 30) {
+                    closeBottomSheet();
+                } else if (heightPercent < 80) {
+                    setBottomSheetState('half');
+                } else {
+                    setBottomSheetState('full');
+                }
+            }
+
+            handle.addEventListener('touchstart', onTouchStart, { passive: false });
+            handle.addEventListener('touchmove', onTouchMove, { passive: false });
+            handle.addEventListener('touchend', onTouchEnd, { passive: true });
+
+            handle.addEventListener('mousedown', (e) => {
+                const isMobile = window.innerWidth < 768;
+                if (!isMobile || state.bottomSheetState === 'collapsed') return;
+                isDragging = true;
+                startY = e.clientY;
+                startHeight = container.offsetHeight;
+                container.style.transition = 'none';
+
+                const onMouseMove = (e) => {
+                    if (!isDragging) return;
+                    const currentY = e.clientY;
+                    const deltaY = currentY - startY;
+                    const newHeight = startHeight - deltaY;
+                    const windowHeight = window.innerHeight;
+                    const clampedHeight = Math.max(0, Math.min(windowHeight, newHeight));
+                    container.style.height = `${clampedHeight}px`;
+                    const backdrop = document.getElementById('detailsBackdrop');
+                    const opacity = Math.min(0.5, (clampedHeight / windowHeight) * 0.5);
+                    backdrop.style.opacity = opacity.toString();
+                };
+
+                const onMouseUp = () => {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    container.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                    const finalHeight = container.offsetHeight;
+                    const windowHeight = window.innerHeight;
+                    const heightPercent = (finalHeight / windowHeight) * 100;
+                    if (heightPercent < 30) {
+                        closeBottomSheet();
+                    } else if (heightPercent < 80) {
+                        setBottomSheetState('half');
+                    } else {
+                        setBottomSheetState('full');
+                    }
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                };
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
         }
 
         function startLinking(taskId) {
@@ -3552,6 +4010,31 @@ ${getRaidDetailsSection(task)}
             }
         };
 
+        // Sidebar toggles
+        const sidebarTerminologyToggle = document.getElementById('sidebarTerminologyToggle');
+        if (sidebarTerminologyToggle) {
+            sidebarTerminologyToggle.onclick = () => {
+                state.terminology = state.terminology === 'dashPlus' ? 'fiveD' : 'dashPlus';
+                document.getElementById('termLabel').textContent = state.terminology === 'dashPlus' ? '-+' : '5D';
+                localStorage.setItem('terminology', state.terminology);
+                render();
+            };
+        }
+
+        const sidebarThemeToggle = document.getElementById('sidebarThemeToggle');
+        if (sidebarThemeToggle) {
+            sidebarThemeToggle.onclick = () => {
+                const html = document.documentElement;
+                if (html.classList.contains('dark')) {
+                    html.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    html.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            };
+        }
+
         document.getElementById('newProjectBtn').onclick = () => {
             const pid = id();
             state.projects[pid] = { name: 'New Project', tasks: [] };
@@ -3560,6 +4043,194 @@ ${getRaidDetailsSection(task)}
             save();
             render();
         };
+
+        // Touch gesture handlers for mobile swipe actions
+        function handleTouchStart(event, taskId) {
+            // Only on mobile
+            if (window.innerWidth >= 768) return;
+
+            const touch = event.touches[0];
+            state.touchStartX = touch.clientX;
+            state.touchStartY = touch.clientY;
+            state.touchStartTime = Date.now();
+            state.swipingTaskId = taskId;
+            state.swipeDirection = null;
+
+            const row = event.currentTarget;
+            row.classList.add('swiping');
+        }
+
+        function handleTouchMove(event, taskId) {
+            // Only on mobile
+            if (window.innerWidth >= 768) return;
+            if (!state.swipingTaskId) return;
+
+            const touch = event.touches[0];
+            const deltaX = touch.clientX - state.touchStartX;
+            const deltaY = touch.clientY - state.touchStartY;
+
+            // Determine if horizontal swipe (not vertical scroll)
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+                event.preventDefault(); // Prevent scrolling
+
+                const row = document.querySelector(`[data-task-id="${state.swipingTaskId}"]`);
+                if (!row) return;
+
+                // Apply transform to the row
+                row.style.transform = `translateX(${deltaX}px)`;
+
+                // Show appropriate action buttons based on swipe direction
+                if (deltaX < -50) {
+                    // Swipe left - show right-side actions
+                    state.swipeDirection = 'left';
+                    showSwipeActions(state.swipingTaskId, 'right');
+                } else if (deltaX > 50) {
+                    // Swipe right - show left-side action
+                    state.swipeDirection = 'right';
+                    showSwipeActions(state.swipingTaskId, 'left');
+                } else {
+                    state.swipeDirection = null;
+                    hideSwipeActions(state.swipingTaskId);
+                }
+            }
+        }
+
+        function handleTouchEnd(event, taskId) {
+            // Only on mobile
+            if (window.innerWidth >= 768) return;
+            if (!state.swipingTaskId) return;
+
+            const touch = event.changedTouches[0];
+            const deltaX = touch.clientX - state.touchStartX;
+            const deltaY = touch.clientY - state.touchStartY;
+            const deltaTime = Date.now() - state.touchStartTime;
+
+            const row = document.querySelector(`[data-task-id="${state.swipingTaskId}"]`);
+            if (!row) return;
+
+            row.classList.remove('swiping');
+
+            // Check if this was a swipe or a tap
+            const isSwipe = Math.abs(deltaX) > 50 && deltaTime < 300;
+
+            if (isSwipe) {
+                if (deltaX < -50) {
+                    // Swipe left - keep actions visible
+                    row.style.transform = 'translateX(-180px)';
+                    // Haptic feedback
+                    if (navigator.vibrate) navigator.vibrate(10);
+                } else if (deltaX > 50) {
+                    // Swipe right - cycle status
+                    cycleStatus(taskId);
+                    row.style.transform = 'translateX(0)';
+                    hideSwipeActions(taskId);
+                    // Haptic feedback
+                    if (navigator.vibrate) navigator.vibrate(10);
+                }
+            } else {
+                // Not a swipe - reset position
+                row.style.transform = 'translateX(0)';
+                hideSwipeActions(taskId);
+
+                // If it was a quick tap, select the task
+                if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10 && deltaTime < 200) {
+                    selectTaskByClick(row);
+                }
+            }
+
+            state.swipingTaskId = null;
+            state.swipeDirection = null;
+        }
+
+        function showSwipeActions(taskId, side) {
+            // Check if actions already exist
+            let actionsContainer = document.getElementById(`swipe-actions-${taskId}-${side}`);
+            if (actionsContainer) {
+                actionsContainer.style.display = 'flex';
+                return;
+            }
+
+            // Create action buttons
+            const row = document.querySelector(`[data-task-id="${taskId}"]`);
+            if (!row) return;
+
+            const wrapper = row.parentElement;
+            if (!wrapper || !wrapper.classList.contains('task-row-wrapper')) return;
+
+            actionsContainer = document.createElement('div');
+            actionsContainer.id = `swipe-actions-${taskId}-${side}`;
+            actionsContainer.className = `swipe-actions swipe-actions-${side}`;
+
+            if (side === 'right') {
+                // Right-side actions (swipe left to reveal)
+                actionsContainer.innerHTML = `
+                    <button class="swipe-action swipe-action-done" onclick="event.stopPropagation(); toggleDone('${taskId}'); resetSwipe('${taskId}');">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span>Done</span>
+                    </button>
+                    <button class="swipe-action swipe-action-delete" onclick="event.stopPropagation(); if(confirm('Archive this task?')) { archiveTask('${taskId}'); resetSwipe('${taskId}'); }">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        <span>Delete</span>
+                    </button>
+                    <button class="swipe-action swipe-action-more" onclick="event.stopPropagation(); selectTaskById('${taskId}'); resetSwipe('${taskId}');">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                        </svg>
+                        <span>More</span>
+                    </button>
+                `;
+            } else {
+                // Left-side action (swipe right to reveal)
+                actionsContainer.innerHTML = `
+                    <button class="swipe-action swipe-action-status">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        <span>Cycle Status</span>
+                    </button>
+                `;
+            }
+
+            wrapper.appendChild(actionsContainer);
+        }
+
+        function hideSwipeActions(taskId) {
+            ['left', 'right'].forEach(side => {
+                const actionsContainer = document.getElementById(`swipe-actions-${taskId}-${side}`);
+                if (actionsContainer) {
+                    actionsContainer.style.display = 'none';
+                }
+            });
+        }
+
+        function resetSwipe(taskId) {
+            const row = document.querySelector(`[data-task-id="${taskId}"]`);
+            if (row) {
+                row.style.transform = 'translateX(0)';
+                hideSwipeActions(taskId);
+            }
+        }
+
+        function selectTaskByClick(row) {
+            const index = parseInt(row.dataset.taskIndex);
+            if (!isNaN(index)) {
+                state.selectedIndex = index;
+                render();
+            }
+        }
+
+        function selectTaskById(taskId) {
+            const tasks = getFilteredTasks();
+            const index = tasks.findIndex(t => t.id === taskId);
+            if (index !== -1) {
+                state.selectedIndex = index;
+                render();
+            }
+        }
 
         // Initialize
         window.addEventListener('DOMContentLoaded', () => {
@@ -3573,6 +4244,18 @@ ${getRaidDetailsSection(task)}
             }
             load();
             render();
+            initBottomSheetDrag();
+
+            document.addEventListener('focusin', (e) => {
+                const isMobile = window.innerWidth < 768;
+                const detailsPanel = document.getElementById('detailsPanelContainer');
+                const isInDetailsPanel = detailsPanel && detailsPanel.contains(e.target);
+                if (isMobile && isInDetailsPanel && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+                    if (state.bottomSheetState === 'half') {
+                        openBottomSheetToFull();
+                    }
+                }
+            });
         });
     </script>
 </body>
