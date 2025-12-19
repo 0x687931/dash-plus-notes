@@ -399,12 +399,14 @@
 
                 <!-- Search Bar -->
                 <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                    <label for="searchInput" class="sr-only">Search tasks</label>
                     <input
                         id="searchInput"
                         type="text"
                         placeholder="🔍 Search tasks..."
                         oninput="handleSearch(this.value)"
                         class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                        aria-label="Search tasks"
                     />
                 </div>
 
@@ -573,13 +575,13 @@
             </div>
 
             <!-- Link Task Overlay -->
-            <div id="linkOverlay" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4" onclick="if(event.target.id==='linkOverlay') cancelLinking()">
+            <div id="linkOverlay" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4" onclick="if(event.target.id==='linkOverlay') cancelLinking()" role="dialog" aria-modal="true" aria-labelledby="linkDialogTitle">
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 max-w-2xl w-full max-h-[90vh] md:max-h-[80vh] overflow-hidden flex flex-col">
                     <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
                         <div class="flex items-center justify-between mb-3">
-                            <h2 class="text-lg font-semibold">Link Task</h2>
-                            <button onclick="cancelLinking()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <h2 id="linkDialogTitle" class="text-lg font-semibold">Link Task</h2>
+                            <button onclick="cancelLinking()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="Close dialog">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
                             </button>
@@ -645,12 +647,12 @@
             </div>
 
             <!-- Keyboard Shortcuts Overlay -->
-            <div id="keyboardHelp" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4" onclick="if(event.target.id==='keyboardHelp') toggleKeyboardHelp()">
+            <div id="keyboardHelp" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4" onclick="if(event.target.id==='keyboardHelp') toggleKeyboardHelp()" role="dialog" aria-modal="true" aria-labelledby="keyboardHelpTitle">
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 max-w-2xl w-full max-h-[90vh] md:max-h-[80vh] overflow-y-auto">
                     <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
-                        <h2 class="text-lg font-semibold">Keyboard Shortcuts</h2>
-                        <button onclick="toggleKeyboardHelp()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <h2 id="keyboardHelpTitle" class="text-lg font-semibold">Keyboard Shortcuts</h2>
+                        <button onclick="toggleKeyboardHelp()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="Close dialog">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
