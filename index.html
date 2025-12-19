@@ -137,16 +137,132 @@
                 opacity: 0.8;
             }
         }
+
+        /* === PHASE 6: ACCESSIBILITY (WCAG 2.1 AA) === */
+
+        /* Focus indicators with proper contrast (WCAG requirement) */
+        *:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        .dark *:focus {
+            outline-color: #60a5fa;
+        }
+
+        *:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        .dark *:focus-visible {
+            outline-color: #60a5fa;
+        }
+
+        /* Skip links for keyboard navigation */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            z-index: 100;
+            border-radius: 0 0 4px 0;
+            font-weight: 600;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Loading skeleton animation */
+        @keyframes skeleton-loading {
+            0% { background-position: -200px 0; }
+            100% { background-position: calc(200px + 100%) 0; }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 0px, #e0e0e0 40px, #f0f0f0 80px);
+            background-size: 200px 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        .dark .skeleton {
+            background: linear-gradient(90deg, #374151 0px, #4b5563 40px, #374151 80px);
+        }
+
+        /* Screen reader only content */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Error states with WCAG AA contrast */
+        .error-border {
+            border: 2px solid #dc2626 !important;
+        }
+
+        .error-text {
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        .dark .error-text {
+            color: #f87171;
+        }
+
+        .error-bg {
+            background-color: #fee2e2;
+        }
+
+        .dark .error-bg {
+            background-color: #7f1d1d;
+        }
+
+        /* Loading spinner animation */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Respect user's motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            .skeleton,
+            .spinner {
+                animation: none;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <!-- Skip Links for Keyboard Navigation -->
+    <a href="#mainContent" class="skip-link">Skip to main content</a>
+    <a href="#taskTable" class="skip-link">Skip to task list</a>
+    <a href="#bottomNav" class="skip-link md:hidden">Skip to navigation</a>
+
+    <!-- Live Region for Screen Reader Announcements -->
+    <div id="announcements" role="status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
     <div class="h-screen flex flex-col">
         <!-- Mobile Header (< 768px) -->
-        <header class="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <header class="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700" role="banner">
             <div class="flex items-center justify-between h-14 px-4">
                 <!-- Left: Hamburger -->
-                <button onclick="toggleHamburgerMenu()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" title="Menu">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onclick="toggleHamburgerMenu()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" aria-label="Open menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
@@ -154,16 +270,16 @@
                 <!-- Center: Logo + Project -->
                 <div class="flex items-center gap-2">
                     <h1 class="text-base font-bold text-blue-600 dark:text-blue-400">dash-plus</h1>
-                    <button onclick="toggleProjectSelector()" id="currentProjectBtn" class="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded flex items-center gap-1">
+                    <button onclick="toggleProjectSelector()" id="currentProjectBtn" class="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded flex items-center gap-1" aria-label="Select project" aria-haspopup="true">
                         <span id="currentProjectName">Inbox</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </button>
                 </div>
 
                 <!-- Right: Settings -->
-                <button onclick="toggleMobileSettings()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" title="Settings">
+                <button onclick="toggleMobileSettings()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" aria-label="Open settings">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -173,44 +289,44 @@
         </header>
 
         <!-- Desktop Header (≥ 768px) -->
-        <header class="hidden md:block bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3">
+        <header class="hidden md:block bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3" role="banner">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <h1 class="text-xl font-bold text-blue-600 dark:text-blue-400">dash-plus</h1>
                     <div id="projectTabs" class="flex gap-2"></div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button id="terminologyToggle" class="px-3 py-2 text-xs font-mono bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg" title="Toggle terminology">
+                    <button id="terminologyToggle" class="px-3 py-2 text-xs font-mono bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg" aria-label="Toggle terminology between Dash-Plus and 5D">
                         <span id="termLabel">-+</span>
                     </button>
-                    <button id="themeToggle" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" title="Toggle theme">
-                        <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button id="themeToggle" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" aria-label="Toggle dark mode">
+                        <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
-                        <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                         </svg>
                     </button>
-                    <button id="newProjectBtn" class="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg">
+                    <button id="newProjectBtn" class="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg" aria-label="Create new project">
                         + Project
                     </button>
                     <div class="relative">
-                        <button onclick="toggleExportMenu()" id="exportMenuBtn" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-400" title="Export">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button onclick="toggleExportMenu()" id="exportMenuBtn" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-400" aria-label="Export options" aria-haspopup="true">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                             </svg>
                         </button>
                         <div id="exportMenu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
-                            <button onclick="exportMarkdown()" class="w-full px-4 py-2 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 rounded-t-lg">
+                            <button onclick="exportMarkdown()" class="w-full px-4 py-2 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 rounded-t-lg" aria-label="Export as Markdown">
                                 📝 Export Markdown
                             </button>
-                            <button onclick="exportPDF()" class="w-full px-4 py-2 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 rounded-b-lg">
+                            <button onclick="exportPDF()" class="w-full px-4 py-2 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 rounded-b-lg" aria-label="Export as PDF">
                                 📄 Export PDF
                             </button>
                         </div>
                     </div>
-                    <button onclick="toggleKeyboardHelp()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-400" title="Keyboard shortcuts (?)">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button onclick="toggleKeyboardHelp()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-400" aria-label="Show keyboard shortcuts">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </button>
@@ -219,7 +335,7 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+        <main id="mainContent" class="flex-1 flex flex-col lg:flex-row overflow-hidden relative" role="main">
             <!-- Left Sidebar (Desktop ≥ 1024px) -->
             <aside id="leftSidebar" class="hidden lg:flex lg:w-60 flex-col bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700">
                 <!-- Project List -->
@@ -283,12 +399,14 @@
 
                 <!-- Search Bar -->
                 <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                    <label for="searchInput" class="sr-only">Search tasks</label>
                     <input
                         id="searchInput"
                         type="text"
                         placeholder="🔍 Search tasks..."
                         oninput="handleSearch(this.value)"
                         class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                        aria-label="Search tasks"
                     />
                 </div>
 
@@ -457,13 +575,13 @@
             </div>
 
             <!-- Link Task Overlay -->
-            <div id="linkOverlay" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4" onclick="if(event.target.id==='linkOverlay') cancelLinking()">
+            <div id="linkOverlay" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4" onclick="if(event.target.id==='linkOverlay') cancelLinking()" role="dialog" aria-modal="true" aria-labelledby="linkDialogTitle">
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 max-w-2xl w-full max-h-[90vh] md:max-h-[80vh] overflow-hidden flex flex-col">
                     <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
                         <div class="flex items-center justify-between mb-3">
-                            <h2 class="text-lg font-semibold">Link Task</h2>
-                            <button onclick="cancelLinking()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <h2 id="linkDialogTitle" class="text-lg font-semibold">Link Task</h2>
+                            <button onclick="cancelLinking()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="Close dialog">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
                             </button>
@@ -529,12 +647,12 @@
             </div>
 
             <!-- Keyboard Shortcuts Overlay -->
-            <div id="keyboardHelp" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4" onclick="if(event.target.id==='keyboardHelp') toggleKeyboardHelp()">
+            <div id="keyboardHelp" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4" onclick="if(event.target.id==='keyboardHelp') toggleKeyboardHelp()" role="dialog" aria-modal="true" aria-labelledby="keyboardHelpTitle">
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 max-w-2xl w-full max-h-[90vh] md:max-h-[80vh] overflow-y-auto">
                     <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
-                        <h2 class="text-lg font-semibold">Keyboard Shortcuts</h2>
-                        <button onclick="toggleKeyboardHelp()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <h2 id="keyboardHelpTitle" class="text-lg font-semibold">Keyboard Shortcuts</h2>
+                        <button onclick="toggleKeyboardHelp()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="Close dialog">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
@@ -828,28 +946,28 @@
         </div>
 
         <!-- Bottom Navigation (Mobile) -->
-        <nav id="bottomNav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-40">
+        <nav id="bottomNav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-40" role="navigation" aria-label="Main navigation">
             <div class="grid grid-cols-4 h-16">
-                <button onclick="setBottomNavView('all')" data-nav="all" class="flex flex-col items-center justify-center gap-0.5 text-blue-600 dark:text-blue-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onclick="setBottomNavView('all')" data-nav="all" class="flex flex-col items-center justify-center gap-0.5 text-blue-600 dark:text-blue-400" aria-label="View all tasks" aria-current="page">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                     <span class="text-xs">All</span>
                 </button>
-                <button onclick="setBottomNavView('active')" data-nav="active" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onclick="setBottomNavView('active')" data-nav="active" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400" aria-label="View active tasks">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                     </svg>
                     <span class="text-xs">Active</span>
                 </button>
-                <button onclick="setBottomNavView('matrix')" data-nav="matrix" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onclick="setBottomNavView('matrix')" data-nav="matrix" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400" aria-label="View matrix">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
                     </svg>
                     <span class="text-xs">Matrix</span>
                 </button>
-                <button onclick="setBottomNavView('more')" data-nav="more" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onclick="setBottomNavView('more')" data-nav="more" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400" aria-label="More options">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                     </svg>
                     <span class="text-xs">More</span>
@@ -858,8 +976,8 @@
         </nav>
 
         <!-- FAB (Floating Action Button) - Mobile -->
-        <button id="fab" onclick="toggleFabMenu()" class="md:hidden fixed bottom-20 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center z-30 transition-all">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="fab" onclick="toggleFabMenu()" class="md:hidden fixed bottom-20 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center z-30 transition-all" aria-label="Add new task" aria-haspopup="menu" aria-expanded="false">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
         </button>
@@ -1032,6 +1150,117 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        // ===== ACCESSIBILITY FUNCTIONS =====
+
+        /**
+         * Announce message to screen readers
+         * @param {string} message - Message to announce
+         * @param {string} priority - 'polite' or 'assertive'
+         */
+        function announce(message, priority = 'polite') {
+            const announcer = document.getElementById('announcements');
+            if (!announcer) return;
+
+            announcer.setAttribute('aria-live', priority);
+            announcer.textContent = message;
+
+            // Clear after 3 seconds to prevent stale announcements
+            setTimeout(() => {
+                announcer.textContent = '';
+            }, 3000);
+        }
+
+        /**
+         * Show error state on form field
+         * @param {string} fieldId - ID of the field element
+         * @param {string} message - Error message to display
+         */
+        function showFieldError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            if (!field) return;
+
+            // Add error styling
+            field.classList.add('border-red-500', 'dark:border-red-500');
+            field.setAttribute('aria-invalid', 'true');
+
+            // Create or update error message
+            let errorEl = document.getElementById(`${fieldId}-error`);
+            if (!errorEl) {
+                errorEl = document.createElement('div');
+                errorEl.id = `${fieldId}-error`;
+                errorEl.className = 'text-red-600 dark:text-red-400 text-sm mt-1';
+                errorEl.setAttribute('role', 'alert');
+                field.parentNode.insertBefore(errorEl, field.nextSibling);
+            }
+            errorEl.textContent = message;
+            field.setAttribute('aria-describedby', `${fieldId}-error`);
+
+            // Announce to screen readers
+            announce(message, 'assertive');
+        }
+
+        /**
+         * Clear error state from form field
+         * @param {string} fieldId - ID of the field element
+         */
+        function clearFieldError(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (!field) return;
+
+            // Remove error styling
+            field.classList.remove('border-red-500', 'dark:border-red-500');
+            field.removeAttribute('aria-invalid');
+            field.removeAttribute('aria-describedby');
+
+            // Remove error message
+            const errorEl = document.getElementById(`${fieldId}-error`);
+            if (errorEl) {
+                errorEl.remove();
+            }
+        }
+
+        /**
+         * Show toast notification
+         * @param {string} message - Message to display
+         * @param {string} type - 'info', 'success', 'warning', 'error'
+         */
+        function showToast(message, type = 'info') {
+            const colors = {
+                info: 'bg-blue-600',
+                success: 'bg-green-600',
+                warning: 'bg-amber-600',
+                error: 'bg-red-600'
+            };
+
+            const icons = {
+                info: 'ℹ️',
+                success: '✅',
+                warning: '⚠️',
+                error: '❌'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-24 md:bottom-8 right-4 ${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50 animate-slide-in`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'polite');
+            toast.innerHTML = `
+                <span>${icons[type]}</span>
+                <span>${esc(message)}</span>
+            `;
+
+            document.body.appendChild(toast);
+
+            // Announce to screen readers
+            announce(message, 'polite');
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         // Data
@@ -1253,6 +1482,11 @@
             };
             getProject().tasks.push(task);
             save();
+
+            // Announce task creation to screen readers
+            const taskTypeLabel = type === 'task' ? 'Task' : type.charAt(0).toUpperCase() + type.slice(1);
+            announce(`${taskTypeLabel} created: ${content || 'New task'}`, 'polite');
+
             return task;
         }
 
@@ -1262,6 +1496,13 @@
                 Object.assign(task, updates);
                 save();
                 render();
+
+                // Announce task update to screen readers
+                if (updates.status) {
+                    announce(`Task status changed to ${updates.status}`, 'polite');
+                } else if (updates.content) {
+                    announce('Task updated', 'polite');
+                }
             }
         }
 
@@ -1273,6 +1514,9 @@
                 state.selectedIndex = Math.max(0, Math.min(state.selectedIndex, getTasks().length - 1));
                 save();
                 render();
+
+                // Announce task archival to screen readers
+                announce(`Task archived: ${task.content}`, 'polite');
             }
         }
 
