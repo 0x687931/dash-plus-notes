@@ -946,26 +946,26 @@
         <!-- Bottom Navigation (Mobile) -->
         <nav id="bottomNav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-40" role="navigation" aria-label="Main navigation">
             <div class="grid grid-cols-4 h-16">
-                <button onclick="setBottomNavView('all')" data-nav="all" class="flex flex-col items-center justify-center gap-0.5 text-blue-600 dark:text-blue-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onclick="setBottomNavView('all')" data-nav="all" class="flex flex-col items-center justify-center gap-0.5 text-blue-600 dark:text-blue-400" aria-label="View all tasks" aria-current="page">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                     <span class="text-xs">All</span>
                 </button>
-                <button onclick="setBottomNavView('active')" data-nav="active" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onclick="setBottomNavView('active')" data-nav="active" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400" aria-label="View active tasks">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                     </svg>
                     <span class="text-xs">Active</span>
                 </button>
-                <button onclick="setBottomNavView('matrix')" data-nav="matrix" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onclick="setBottomNavView('matrix')" data-nav="matrix" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400" aria-label="View matrix">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
                     </svg>
                     <span class="text-xs">Matrix</span>
                 </button>
-                <button onclick="setBottomNavView('more')" data-nav="more" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onclick="setBottomNavView('more')" data-nav="more" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400" aria-label="More options">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                     </svg>
                     <span class="text-xs">More</span>
@@ -974,8 +974,8 @@
         </nav>
 
         <!-- FAB (Floating Action Button) - Mobile -->
-        <button id="fab" onclick="toggleFabMenu()" class="md:hidden fixed bottom-20 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center z-30 transition-all">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="fab" onclick="toggleFabMenu()" class="md:hidden fixed bottom-20 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center z-30 transition-all" aria-label="Add new task" aria-haspopup="menu" aria-expanded="false">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
         </button>
