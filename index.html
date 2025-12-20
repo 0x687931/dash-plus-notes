@@ -4,168 +4,391 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dash-Plus Notes</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* Task row styling */
-        .task-row {
+        html, body {
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            background: #ffffff;
+            color: #000000;
+        }
+
+        body.dark {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+
+        body.dark header {
+            border-bottom-color: #ffffff;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #000000;
+            background: transparent;
+            cursor: pointer;
+            font-size: 18px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            background: white;
-            transition: all 0.2s;
+            justify-content: center;
         }
 
-        .task-row:hover {
-            border-color: #3b82f6;
-            background: #f0f9ff;
+        body.dark .theme-toggle {
+            border-color: #ffffff;
         }
 
-        .task-row.done {
-            opacity: 0.6;
-            text-decoration: line-through;
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 2px solid #000000;
         }
 
-        .task-status {
-            font-weight: bold;
-            font-size: 18px;
-            cursor: pointer;
-            min-width: 24px;
-            text-align: center;
-            user-select: none;
+        body.dark .stats {
+            border-color: #ffffff;
         }
 
-        .task-content {
-            flex: 1;
-            cursor: pointer;
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
-        .task-content input {
-            width: 100%;
-            padding: 6px;
-            border: 2px solid #3b82f6;
-            border-radius: 4px;
-        }
-
-        .task-due {
+        .stat-label {
             font-size: 12px;
-            color: #666;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
         }
 
-        .task-delete {
-            padding: 4px 8px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
         }
 
-        .task-delete:hover {
-            background: #dc2626;
-        }
-
-        /* Input for new task */
+        /* Input */
         #newTaskInput {
             width: 100%;
-            padding: 12px;
+            padding: 16px;
             font-size: 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 6px;
-            margin-bottom: 16px;
+            border: 2px solid #000000;
+            background: #ffffff;
+            color: #000000;
+            font-family: inherit;
+            margin-bottom: 40px;
+        }
+
+        body.dark #newTaskInput {
+            border-color: #ffffff;
+            background: #000000;
+            color: #ffffff;
+        }
+
+        #newTaskInput::placeholder {
+            opacity: 0.5;
         }
 
         #newTaskInput:focus {
             outline: none;
-            border-color: #3b82f6;
+            background: #f0f0f0;
         }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
+        body.dark #newTaskInput:focus {
+            background: #1a1a1a;
         }
 
-        h1 {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .stats {
+        /* Task List */
+        #taskList, #archivedTaskList {
             display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .task-row {
+            display: grid;
+            grid-template-columns: 80px 1fr auto auto auto;
+            gap: 16px;
+            align-items: center;
+            padding: 16px;
+            border: 1px solid #000000;
+            border-top: none;
+            background: #ffffff;
+        }
+
+        .task-row:first-child {
+            border-top: 2px solid #000000;
+        }
+
+        body.dark .task-row {
+            border-color: #ffffff;
+            background: #000000;
+        }
+
+        .task-row.done .task-content {
+            opacity: 0.4;
+            text-decoration: line-through;
+        }
+
+        /* Status Selector */
+        .status-selector {
+            position: relative;
+            width: 80px;
+        }
+
+        .status-button {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #000000;
+            background: #ffffff;
+            color: #000000;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        body.dark .status-button {
+            border-color: #ffffff;
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .status-button:hover {
+            background: #f0f0f0;
+        }
+
+        body.dark .status-button:hover {
+            background: #1a1a1a;
+        }
+
+        .status-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #000000;
+            border-top: none;
+            margin-top: -1px;
+            z-index: 10;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark .status-dropdown {
+            background: #000000;
+            border-color: #ffffff;
+            box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
+        }
+
+        .status-dropdown.open {
+            display: block;
+        }
+
+        .status-option {
+            padding: 12px;
+            border-bottom: 1px solid #000000;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        body.dark .status-option {
+            border-bottom-color: #ffffff;
+        }
+
+        .status-option:last-child {
+            border-bottom: none;
+        }
+
+        .status-option:hover {
+            background: #f0f0f0;
+        }
+
+        body.dark .status-option:hover {
+            background: #1a1a1a;
+        }
+
+        .status-option-title {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .status-option-desc {
             font-size: 12px;
-            color: #666;
+            opacity: 0.6;
         }
 
-        .task-delete {
-            padding: 4px 8px;
+        /* Task Content */
+        .task-content {
+            flex: 1;
+            cursor: text;
         }
 
-        .dark .task-row {
-            background: #1f2937;
-            border-color: #374151;
+        .task-content input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #000000;
+            background: #ffffff;
+            color: #000000;
+            font-family: inherit;
+            font-size: 16px;
         }
 
-        .dark .task-row:hover {
-            background: #111827;
+        body.dark .task-content input {
+            border-color: #ffffff;
+            background: #1a1a1a;
+            color: #ffffff;
         }
 
-        .dark .task-content {
-            color: #f3f4f6;
+        /* Task Metadata */
+        .task-meta {
+            display: flex;
+            gap: 8px;
+            font-size: 12px;
+            white-space: nowrap;
         }
 
-        .dark .task-due {
-            color: #9ca3af;
+        .task-due {
+            cursor: pointer;
+            border-bottom: 1px dotted #000000;
+            padding: 2px 4px;
         }
 
-        .dark #newTaskInput {
-            background: #1f2937;
-            color: #f3f4f6;
-            border-color: #374151;
+        body.dark .task-due {
+            border-bottom-color: #ffffff;
+        }
+
+        .task-delegated {
+            cursor: pointer;
+            border-bottom: 1px dotted #000000;
+            padding: 2px 4px;
+        }
+
+        body.dark .task-delegated {
+            border-bottom-color: #ffffff;
+        }
+
+        /* Archive Button */
+        .archive-btn {
+            padding: 8px 12px;
+            border: 1px solid #000000;
+            background: #ffffff;
+            color: #000000;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        body.dark .archive-btn {
+            border-color: #ffffff;
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .archive-btn:hover {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        body.dark .archive-btn:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        /* Archived Section */
+        #archivedList {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 2px solid #000000;
+        }
+
+        body.dark #archivedList {
+            border-top-color: #ffffff;
+        }
+
+        #archivedList h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+<body>
     <div class="container">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-            <h1>dash-plus</h1>
-            <button onclick="toggleTheme()" style="padding: 8px 12px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                <span id="themeIcon">🌙</span>
-            </button>
-        </div>
+        <header>
+            <h1>DASH-PLUS</h1>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">◐</button>
+        </header>
 
         <div class="stats">
-            <span>Total: <strong id="totalCount">0</strong></span>
-            <span>Active: <strong id="activeCount">0</strong></span>
-            <span>Done: <strong id="doneCount">0</strong></span>
-            <span style="margin-left: auto;">
-                <button onclick="toggleArchiveView()" style="padding: 4px 8px; background: #6b7280; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
-                    📦 <span id="archiveLabel">Archived</span> (<span id="archivedCount">0</span>)
-                </button>
-            </span>
+            <div class="stat-item">
+                <div class="stat-label">Total</div>
+                <div class="stat-value" id="totalCount">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Active</div>
+                <div class="stat-value" id="activeCount">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Done</div>
+                <div class="stat-value" id="doneCount">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Archived</div>
+                <div class="stat-value" id="archivedCount">0</div>
+            </div>
         </div>
 
         <input
             id="newTaskInput"
             type="text"
-            placeholder="Type a task and press Enter..."
+            placeholder="Add task..."
             autocomplete="off"
         />
 
         <div id="taskList"></div>
-        <div id="archivedList" style="display: none; margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
-            <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 12px;">Archived Tasks</h2>
+        <div id="archivedList" style="display: none;">
+            <h2>Archived</h2>
             <div id="archivedTaskList"></div>
         </div>
     </div>
@@ -173,14 +396,14 @@
     <script>
         // State management
         const STORAGE_KEY = 'dashplus-tasks';
-        const SYMBOLS = {
-            active: '-',
-            waiting: '→',
-            delegated: '←',
-            reference: 'Δ',
-            done: '+'
+        const STATUS_INFO = {
+            active: { label: 'ACTIVE', desc: 'Current task to do' },
+            waiting: { label: 'WAITING', desc: 'Blocked by external factor' },
+            delegated: { label: 'DELEGATED', desc: 'Assigned to someone else' },
+            reference: { label: 'REFERENCE', desc: 'Data point, not actionable' },
+            done: { label: 'DONE', desc: 'Complete or cancelled' }
         };
-        const STATUS_CYCLE = ['active', 'waiting', 'delegated', 'reference', 'done'];
+        const STATUS_ORDER = ['active', 'waiting', 'delegated', 'reference', 'done'];
 
         let tasks = [];
         let showArchived = false;
@@ -209,17 +432,17 @@
             const archivedTasks = tasks.filter(t => t.archived);
 
             // Render active tasks
-            activeTasks.forEach((task, idx) => {
-                const realIdx = tasks.indexOf(task);
-                const taskRow = createTaskElement(task, realIdx);
+            activeTasks.forEach((task) => {
+                const idx = tasks.indexOf(task);
+                const taskRow = createTaskElement(task, idx);
                 listEl.appendChild(taskRow);
             });
 
             // Render archived tasks (if showing archive view)
             if (showArchived) {
-                archivedTasks.forEach((task, idx) => {
-                    const realIdx = tasks.indexOf(task);
-                    const taskRow = createTaskElement(task, realIdx, true);
+                archivedTasks.forEach((task) => {
+                    const idx = tasks.indexOf(task);
+                    const taskRow = createTaskElement(task, idx, true);
                     archivedListEl.appendChild(taskRow);
                 });
                 archivedContainerEl.style.display = archivedTasks.length > 0 ? 'block' : 'none';
@@ -230,23 +453,59 @@
             updateStats();
         }
 
+        // Create status selector
+        function createStatusSelector(idx, isArchived) {
+            const container = document.createElement('div');
+            container.className = 'status-selector';
+
+            const button = document.createElement('button');
+            button.className = 'status-button';
+            button.textContent = STATUS_INFO[tasks[idx].status].label;
+            button.type = 'button';
+
+            const dropdown = document.createElement('div');
+            dropdown.className = 'status-dropdown';
+
+            STATUS_ORDER.forEach(status => {
+                const option = document.createElement('div');
+                option.className = 'status-option';
+                option.innerHTML = `
+                    <div class="status-option-title">${STATUS_INFO[status].label}</div>
+                    <div class="status-option-desc">${STATUS_INFO[status].desc}</div>
+                `;
+                option.onclick = (e) => {
+                    e.stopPropagation();
+                    tasks[idx].status = status;
+                    save();
+                    render();
+                };
+                dropdown.appendChild(option);
+            });
+
+            if (!isArchived) {
+                button.onclick = (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('open');
+                };
+            } else {
+                button.style.opacity = '0.5';
+                button.disabled = true;
+            }
+
+            container.appendChild(button);
+            container.appendChild(dropdown);
+            return container;
+        }
+
         // Create task row element
         function createTaskElement(task, idx, isArchived = false) {
             const taskRow = document.createElement('div');
             taskRow.className = `task-row ${task.status === 'done' ? 'done' : ''}`;
             taskRow.dataset.idx = idx;
 
-            // Status symbol
-            const statusEl = document.createElement('span');
-            statusEl.className = 'task-status';
-            statusEl.textContent = SYMBOLS[task.status] || '-';
-            if (!isArchived) {
-                statusEl.onclick = (e) => {
-                    e.stopPropagation();
-                    cycleStatus(idx);
-                };
-            }
-            taskRow.appendChild(statusEl);
+            // Status selector
+            const statusContainer = createStatusSelector(idx, isArchived);
+            taskRow.appendChild(statusContainer);
 
             // Content
             const contentEl = document.createElement('span');
@@ -260,44 +519,46 @@
             }
             taskRow.appendChild(contentEl);
 
-            // Due date (clickable to edit)
+            // Metadata container
+            const metaContainer = document.createElement('div');
+            metaContainer.className = 'task-meta';
+
+            // Due date
             if (task.dueDate || !isArchived) {
                 const dueEl = document.createElement('span');
                 dueEl.className = 'task-due';
-                dueEl.textContent = task.dueDate || '📅';
-                dueEl.style.cursor = 'pointer';
+                dueEl.textContent = task.dueDate || 'due';
                 if (!isArchived) {
                     dueEl.ondblclick = (e) => {
                         e.stopPropagation();
                         editField(idx, 'dueDate');
                     };
-                    dueEl.title = 'Double-click to edit due date';
                 }
-                taskRow.appendChild(dueEl);
+                metaContainer.appendChild(dueEl);
             }
 
-            // Delegated to (clickable to edit)
+            // Delegated to
             if (task.delegatedTo || (!isArchived && task.status === 'delegated')) {
                 const delegatedEl = document.createElement('span');
-                delegatedEl.className = 'task-due';
-                delegatedEl.textContent = task.delegatedTo ? `← @${task.delegatedTo}` : '← ?';
-                delegatedEl.style.cursor = 'pointer';
-                delegatedEl.style.color = '#a855f7';
+                delegatedEl.className = 'task-delegated';
+                delegatedEl.textContent = task.delegatedTo ? `@${task.delegatedTo}` : '@—';
                 if (!isArchived) {
                     delegatedEl.ondblclick = (e) => {
                         e.stopPropagation();
                         editField(idx, 'delegatedTo');
                     };
-                    delegatedEl.title = 'Double-click to edit who it\'s delegated to';
                 }
-                taskRow.appendChild(delegatedEl);
+                metaContainer.appendChild(delegatedEl);
             }
 
-            // Action button (Archive or Unarchive)
+            if (metaContainer.children.length > 0) {
+                taskRow.appendChild(metaContainer);
+            }
+
+            // Archive button
             const actionBtn = document.createElement('button');
-            actionBtn.className = 'task-delete';
-            actionBtn.textContent = isArchived ? '↩' : '📦';
-            actionBtn.title = isArchived ? 'Unarchive' : 'Archive';
+            actionBtn.className = 'archive-btn';
+            actionBtn.textContent = isArchived ? 'UNARCHIVE' : 'ARCHIVE';
             actionBtn.onclick = (e) => {
                 e.stopPropagation();
                 toggleArchive(idx);
@@ -355,7 +616,8 @@
 
         // Edit field (dueDate or delegatedTo)
         function editField(idx, field) {
-            const input = prompt(`Enter ${field === 'dueDate' ? 'due date (e.g., 2025-01-20)' : 'person name'}:`, tasks[idx][field] || '');
+            const prompt_text = field === 'dueDate' ? 'Due date (e.g., 2025-01-20):' : 'Delegated to:';
+            const input = prompt(prompt_text, tasks[idx][field] || '');
             if (input !== null) {
                 tasks[idx][field] = input.trim() || null;
                 save();
@@ -363,25 +625,10 @@
             }
         }
 
-        // Cycle status
-        function cycleStatus(idx) {
-            const current = STATUS_CYCLE.indexOf(tasks[idx].status);
-            const next = (current + 1) % STATUS_CYCLE.length;
-            tasks[idx].status = STATUS_CYCLE[next];
-            save();
-            render();
-        }
-
         // Toggle archive state
         function toggleArchive(idx) {
             tasks[idx].archived = !tasks[idx].archived;
             save();
-            render();
-        }
-
-        // Toggle archive view
-        function toggleArchiveView() {
-            showArchived = !showArchived;
             render();
         }
 
@@ -401,9 +648,18 @@
 
         // Theme toggle
         function toggleTheme() {
-            document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            document.body.classList.toggle('dark');
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
         }
+
+        // Close dropdowns on outside click
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.status-selector')) {
+                document.querySelectorAll('.status-dropdown.open').forEach(d => {
+                    d.classList.remove('open');
+                });
+            }
+        });
 
         // Initialize
         function init() {
@@ -412,7 +668,7 @@
             // Load theme preference
             const theme = localStorage.getItem('theme') || 'light';
             if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark');
             }
 
             // Wire up new task input
