@@ -595,6 +595,63 @@
             line-height: 1.2;
             max-width: 44px;
         }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .keyboard-help {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .keyboard-help-section {
+                gap: 8px;
+                padding-right: 8px;
+            }
+
+            .keyboard-help-key {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+                border-width: 1px;
+            }
+
+            .keyboard-help-desc {
+                font-size: 11px;
+                max-width: 36px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 8px 12px;
+                min-height: 40px;
+            }
+
+            .keyboard-help {
+                gap: 4px;
+            }
+
+            .keyboard-help-section {
+                gap: 4px;
+                padding-right: 4px;
+            }
+
+            .keyboard-help-title {
+                display: none;
+            }
+
+            .keyboard-help-key {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+                border-width: 1px;
+            }
+
+            .keyboard-help-desc {
+                font-size: 10px;
+                max-width: 32px;
+            }
+        }
     </style>
 </head>
 <body>
