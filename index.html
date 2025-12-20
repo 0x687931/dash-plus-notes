@@ -139,11 +139,10 @@
         }
 
         .task-row {
-            display: grid;
-            grid-template-columns: 80px 1fr auto auto auto;
-            gap: 16px;
+            display: flex;
             align-items: center;
-            padding: 16px;
+            gap: 16px;
+            padding: 12px 16px;
             border: 1px solid #000000;
             border-top: none;
             background: #ffffff;
@@ -166,19 +165,20 @@
         /* Status Selector */
         .status-selector {
             position: relative;
-            width: 80px;
+            flex-shrink: 0;
         }
 
         .status-button {
-            width: 100%;
-            padding: 8px;
+            padding: 6px 10px;
             border: 1px solid #000000;
             background: #ffffff;
             color: #000000;
             cursor: pointer;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 13px;
             text-align: center;
+            min-width: 70px;
+            white-space: nowrap;
         }
 
         body.dark .status-button {
@@ -257,17 +257,18 @@
         /* Task Content */
         .task-content {
             flex: 1;
+            min-width: 0;
             cursor: text;
         }
 
         .task-content input {
             width: 100%;
-            padding: 8px;
+            padding: 6px 8px;
             border: 1px solid #000000;
             background: #ffffff;
             color: #000000;
             font-family: inherit;
-            font-size: 16px;
+            font-size: 15px;
         }
 
         body.dark .task-content input {
@@ -279,9 +280,10 @@
         /* Task Metadata */
         .task-meta {
             display: flex;
-            gap: 8px;
+            gap: 12px;
             font-size: 12px;
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .task-due {
@@ -306,15 +308,17 @@
 
         /* Archive Button */
         .archive-btn {
-            padding: 8px 12px;
+            padding: 6px 10px;
             border: 1px solid #000000;
             background: #ffffff;
             color: #000000;
             cursor: pointer;
             font-weight: 700;
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
 
         body.dark .archive-btn {
