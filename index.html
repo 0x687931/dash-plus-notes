@@ -48,142 +48,23 @@
             button, a, input, textarea {
                 min-height: 44px;
             }
-
-            /* Reserve space for bottom nav */
-            #mainContent {
-                padding-bottom: 64px;
-            }
-
-            /* Ensure task table doesn't overflow behind bottom nav */
-            #taskTable {
-                padding-bottom: 80px;
-            }
-        }
-
-        /* Swipe gesture styles (mobile only) */
-        @media (max-width: 768px) {
-            .task-row-wrapper {
-                position: relative;
-                overflow: hidden;
-            }
-
-            .task-row {
-                position: relative;
-                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                z-index: 2;
-            }
-
-            .task-row.swiping {
-                transition: none;
-            }
-
-            .swipe-actions {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                display: flex;
-                align-items: stretch;
-                z-index: 1;
-            }
-
-            .swipe-actions-left {
-                left: 0;
-                justify-content: flex-start;
-            }
-
-            .swipe-actions-right {
-                right: 0;
-                justify-content: flex-end;
-            }
-
-            .swipe-action {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 4px;
-                width: 60px;
-                border: none;
-                font-size: 11px;
-                font-weight: 600;
-                color: white;
-                cursor: pointer;
-                transition: opacity 0.2s;
-            }
-
-            .swipe-action svg {
-                width: 20px;
-                height: 20px;
-            }
-
-            .swipe-action-done {
-                background: #10b981;
-            }
-
-            .swipe-action-delete {
-                background: #ef4444;
-            }
-
-            .swipe-action-more {
-                background: #6b7280;
-            }
-
-            .swipe-action-status {
-                background: #3b82f6;
-                width: 80px;
-            }
-
-            .swipe-action:active {
-                opacity: 0.8;
-            }
         }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
     <div class="h-screen flex flex-col">
-        <!-- Mobile Header (< 768px) -->
-        <header class="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <div class="flex items-center justify-between h-14 px-4">
-                <!-- Left: Hamburger -->
-                <button onclick="toggleHamburgerMenu()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" title="Menu">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-
-                <!-- Center: Logo + Project -->
-                <div class="flex items-center gap-2">
-                    <h1 class="text-base font-bold text-blue-600 dark:text-blue-400">dash-plus</h1>
-                    <button onclick="toggleProjectSelector()" id="currentProjectBtn" class="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded flex items-center gap-1">
-                        <span id="currentProjectName">Inbox</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
+        <!-- Header -->
+        <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 md:px-6 py-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2 md:gap-4">
+                    <h1 class="text-lg md:text-xl font-bold text-blue-600 dark:text-blue-400">dash-plus</h1>
+                    <div id="projectTabs" class="flex gap-1 md:gap-2 flex-wrap"></div>
                 </div>
-
-                <!-- Right: Settings -->
-                <button onclick="toggleMobileSettings()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" title="Settings">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                </button>
-            </div>
-        </header>
-
-        <!-- Desktop Header (≥ 768px) -->
-        <header class="hidden md:block bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <h1 class="text-xl font-bold text-blue-600 dark:text-blue-400">dash-plus</h1>
-                    <div id="projectTabs" class="flex gap-2"></div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button id="terminologyToggle" class="px-3 py-2 text-xs font-mono bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg" title="Toggle terminology">
+                <div class="flex items-center gap-1 md:gap-2 flex-wrap">
+                    <button id="terminologyToggle" class="px-3 py-2.5 min-h-[44px] text-xs font-mono bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg flex items-center" title="Toggle terminology">
                         <span id="termLabel">-+</span>
                     </button>
-                    <button id="themeToggle" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" title="Toggle theme">
+                    <button id="themeToggle" class="p-3 min-h-[44px] min-w-[44px] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center justify-center" title="Toggle theme">
                         <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
@@ -191,25 +72,37 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                         </svg>
                     </button>
-                    <button id="newProjectBtn" class="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg">
+                    <button id="taskViewToggle" class="px-3 py-2.5 min-h-[44px] text-xs bg-blue-100 dark:bg-blue-950 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg flex items-center" title="Show task list view">
+                        <span>📝 Tasks</span>
+                    </button>
+                    <button id="matrixViewToggle" class="px-3 py-2.5 min-h-[44px] text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg flex items-center" title="Toggle Eisenhower Matrix view">
+                        <span id="matrixLabel">📊 Matrix</span>
+                    </button>
+                    <button id="raidViewToggle" class="px-3 py-2.5 min-h-[44px] text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg flex items-center" title="Toggle RAID Log view">
+                        <span id="raidLabel">🎯 RAID</span>
+                    </button>
+                    <button id="archivedToggle" class="px-3 py-2.5 min-h-[44px] text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg flex items-center" title="Toggle archived">
+                        <span id="archivedLabel">📦 <span id="archivedCount">0</span></span>
+                    </button>
+                    <button id="newProjectBtn" class="px-3 py-2.5 min-h-[44px] text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg flex items-center">
                         + Project
                     </button>
                     <div class="relative">
-                        <button onclick="toggleExportMenu()" id="exportMenuBtn" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-400" title="Export">
+                        <button onclick="toggleExportMenu()" id="exportMenuBtn" class="p-3 min-h-[44px] min-w-[44px] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-400 flex items-center justify-center" title="Export">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                             </svg>
                         </button>
                         <div id="exportMenu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
-                            <button onclick="exportMarkdown()" class="w-full px-4 py-2 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 rounded-t-lg">
-                                📝 Export Markdown
+                            <button onclick="exportMarkdown()" class="w-full px-4 py-3 min-h-[44px] text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 rounded-t-lg">
+                                <span>📝</span> Export Markdown
                             </button>
-                            <button onclick="exportPDF()" class="w-full px-4 py-2 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 rounded-b-lg">
-                                📄 Export PDF
+                            <button onclick="exportPDF()" class="w-full px-4 py-3 min-h-[44px] text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 rounded-b-lg">
+                                <span>📄</span> Export PDF
                             </button>
                         </div>
                     </div>
-                    <button onclick="toggleKeyboardHelp()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-400" title="Keyboard shortcuts (?)">
+                    <button onclick="toggleKeyboardHelp()" class="p-3 min-h-[44px] min-w-[44px] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-400 flex items-center justify-center" title="Keyboard shortcuts (?)">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -219,68 +112,9 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-            <!-- Left Sidebar (Desktop ≥ 1024px) -->
-            <aside id="leftSidebar" class="hidden lg:flex lg:w-60 flex-col bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700">
-                <!-- Project List -->
-                <div class="flex-1 overflow-y-auto p-4">
-                    <div class="mb-6">
-                        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Projects</h3>
-                        <div id="sidebarProjectList" class="space-y-1"></div>
-                    </div>
-
-                    <!-- View Switcher -->
-                    <div class="mb-6">
-                        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Views</h3>
-                        <div class="space-y-1">
-                            <button onclick="switchToListView()" id="sidebarViewTasks" class="w-full text-left px-3 py-2 text-sm rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2">
-                                <span>☰</span> Tasks
-                            </button>
-                            <button onclick="switchToMatrixView()" id="sidebarViewMatrix" class="w-full text-left px-3 py-2 text-sm rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2">
-                                <span>⊞</span> Matrix
-                            </button>
-                            <button onclick="switchToRaidView()" id="sidebarViewRaid" class="w-full text-left px-3 py-2 text-sm rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2">
-                                <span>⚠</span> RAID
-                            </button>
-                            <button onclick="toggleArchivedView()" id="sidebarViewArchived" class="w-full text-left px-3 py-2 text-sm rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2">
-                                <span>🗄</span> Archived
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Settings Section -->
-                <div class="border-t border-gray-200 dark:border-gray-700 p-4">
-                    <button id="sidebarTerminologyToggle" class="w-full px-3 py-2 text-xs font-mono bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded text-left" title="Toggle terminology">
-                        <span id="sidebarTermLabel">-+</span> Terminology
-                    </button>
-                    <button id="sidebarThemeToggle" class="w-full mt-2 px-3 py-2 text-sm bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded text-left" title="Toggle theme">
-                        <span class="inline dark:hidden">☀️ Light</span>
-                        <span class="hidden dark:inline">🌙 Dark</span>
-                    </button>
-                </div>
-            </aside>
-
-            <!-- Center Column (Task List) -->
-            <div id="mainContent" class="w-full lg:flex-1 flex flex-col bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out">
-                <!-- Bulk Actions Toolbar (shown when items selected) -->
-                <div id="bulkActionsToolbar" class="hidden px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
-                    <div class="flex items-center justify-between">
-                        <span id="selectedCount" class="text-sm font-medium text-blue-700 dark:text-blue-300">0 selected</span>
-                        <div class="flex gap-2">
-                            <button onclick="bulkMarkDone()" class="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded">
-                                Mark Done
-                            </button>
-                            <button onclick="bulkArchive()" class="px-3 py-1 text-xs bg-gray-600 hover:bg-gray-700 text-white rounded">
-                                Archive
-                            </button>
-                            <button onclick="clearSelection()" class="px-3 py-1 text-xs bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 rounded">
-                                Clear
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
+        <main class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+            <!-- Task List (Database View) -->
+            <div id="mainContent" class="w-full flex flex-col bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out">
                 <!-- Search Bar -->
                 <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                     <input
@@ -296,20 +130,7 @@
                 <div id="viewFilter" class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:border-gray-900/50"></div>
 
                 <!-- Table Header -->
-                <div class="hidden lg:block px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
-                    <div class="grid grid-cols-12 gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                        <div class="col-span-1 flex items-center">
-                            <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll()" class="w-4 h-4 rounded border-gray-300 dark:border-gray-600" title="Select all">
-                        </div>
-                        <div class="col-span-6">Task</div>
-                        <div class="col-span-2">Status</div>
-                        <div class="col-span-2">Due Date</div>
-                        <div class="col-span-1">Actions</div>
-                    </div>
-                </div>
-
-                <!-- Table Header (Mobile/Tablet without checkbox) -->
-                <div class="block lg:hidden md:block px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                <div class="hidden md:block px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
                     <div class="grid grid-cols-12 gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                         <div class="col-span-1">Status</div>
                         <div class="col-span-7">Task</div>
@@ -488,7 +309,7 @@
             </div>
 
             <!-- Type Selector Floating Panel -->
-            <div id="typeSelectorPanel" class="hidden fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-64 max-w-[90vw]">
+            <div id="typeSelectorPanel" class="hidden fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-64">
                 <div class="p-2 space-y-1">
                     <button onclick="setNewTaskType('task')" id="typeBtn-task" class="w-full px-4 py-3 text-left rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900 transition-colors flex items-center gap-2">
                         <span class="text-lg">📝</span>
@@ -690,15 +511,8 @@
                 <span class="text-gray-600 dark:text-gray-400 text-lg">◀</span>
             </button>
 
-            <!-- Mobile Bottom Sheet Backdrop -->
-            <div id="detailsBackdrop" class="md:hidden fixed inset-0 bg-black transition-opacity duration-300 pointer-events-none opacity-0 z-20" onclick="closeBottomSheet()"></div>
-
             <!-- Details Panel -->
-            <div id="detailsPanelContainer" class="fixed bottom-0 left-0 right-0 lg:relative lg:top-0 lg:bottom-0 w-full lg:w-90 h-[60vh] lg:h-auto flex flex-col bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 lg:border-l lg:border-t-0 rounded-t-2xl lg:rounded-none z-30 lg:shadow-none" style="transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
-                <!-- Mobile Bottom Sheet Handle -->
-                <div id="bottomSheetHandle" class="md:hidden flex justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing" style="touch-action: none;">
-                    <div class="w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
-                </div>
+            <div id="detailsPanelContainer" class="fixed right-0 top-[57px] bottom-0 w-full md:w-[30%] flex flex-col bg-white dark:bg-gray-900 border-t md:border-t-0 border-l border-gray-200 dark:border-gray-700 transition-transform duration-300 ease-in-out z-30">
                 <div class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" onclick="toggleDetails()">
                     <h2 class="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase">Details</h2>
                     <span id="detailsToggle" class="text-gray-400 dark:text-gray-500 transition-all duration-300">▶</span>
@@ -758,132 +572,6 @@
                 </div>
             </div>
         </main>
-
-        <!-- Hamburger Menu Drawer (Mobile) -->
-        <div id="hamburgerMenu" class="md:hidden fixed inset-0 z-50 hidden">
-            <!-- Overlay -->
-            <div class="absolute inset-0 bg-black/50" onclick="toggleHamburgerMenu()"></div>
-
-            <!-- Drawer -->
-            <div class="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white dark:bg-gray-800 transform transition-transform duration-300" id="hamburgerDrawer" style="transform: translateX(-100%)">
-                <div class="flex flex-col h-full">
-                    <!-- Header -->
-                    <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-                        <h2 class="text-lg font-bold">Menu</h2>
-                        <button onclick="toggleHamburgerMenu()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Content -->
-                    <div class="flex-1 overflow-y-auto">
-                        <!-- Projects Section -->
-                        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-                            <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Projects</h3>
-                            <div id="hamburgerProjectList" class="space-y-1"></div>
-                            <button onclick="newProject()" class="w-full mt-2 px-3 py-2 text-left text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg">
-                                + New Project
-                            </button>
-                        </div>
-
-                        <!-- Views Section -->
-                        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-                            <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Views</h3>
-                            <button id="hamburgerTaskView" onclick="setView('tasks'); toggleHamburgerMenu()" class="w-full px-3 py-2 text-left text-sm bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 rounded-lg mb-1">
-                                📝 Task List
-                            </button>
-                            <button id="hamburgerMatrixView" onclick="setView('matrix'); toggleHamburgerMenu()" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg mb-1">
-                                📊 Matrix
-                            </button>
-                            <button id="hamburgerRaidView" onclick="setView('raid'); toggleHamburgerMenu()" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg mb-1">
-                                🎯 RAID
-                            </button>
-                            <button id="hamburgerArchivedView" onclick="toggleArchived(); toggleHamburgerMenu()" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center justify-between">
-                                <span>📦 Archived</span>
-                                <span id="hamburgerArchivedCount" class="text-xs text-gray-500">0</span>
-                            </button>
-                        </div>
-
-                        <!-- Settings Section -->
-                        <div class="p-4">
-                            <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Settings</h3>
-                            <button onclick="toggleTheme()" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg mb-1">
-                                🌙 Toggle Theme
-                            </button>
-                            <button onclick="toggleTerminology()" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg mb-1">
-                                -+ Toggle Terminology
-                            </button>
-                            <button onclick="toggleKeyboardHelp(); toggleHamburgerMenu()" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg mb-1">
-                                ⌨️ Keyboard Shortcuts
-                            </button>
-                            <button onclick="exportMarkdown(); toggleHamburgerMenu()" class="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
-                                📤 Export
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Navigation (Mobile) -->
-        <nav id="bottomNav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-40">
-            <div class="grid grid-cols-4 h-16">
-                <button onclick="setBottomNavView('all')" data-nav="all" class="flex flex-col items-center justify-center gap-0.5 text-blue-600 dark:text-blue-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                    <span class="text-xs">All</span>
-                </button>
-                <button onclick="setBottomNavView('active')" data-nav="active" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                    </svg>
-                    <span class="text-xs">Active</span>
-                </button>
-                <button onclick="setBottomNavView('matrix')" data-nav="matrix" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
-                    </svg>
-                    <span class="text-xs">Matrix</span>
-                </button>
-                <button onclick="setBottomNavView('more')" data-nav="more" class="flex flex-col items-center justify-center gap-0.5 text-gray-600 dark:text-gray-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                    </svg>
-                    <span class="text-xs">More</span>
-                </button>
-            </div>
-        </nav>
-
-        <!-- FAB (Floating Action Button) - Mobile -->
-        <button id="fab" onclick="toggleFabMenu()" class="md:hidden fixed bottom-20 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center z-30 transition-all">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-        </button>
-
-        <!-- FAB Menu (Type Selector) -->
-        <div id="fabMenu" class="md:hidden fixed bottom-36 right-4 hidden z-30">
-            <div class="flex flex-col items-end gap-2">
-                <button onclick="createTaskWithType('task'); toggleFabMenu()" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <span>📝 Task</span>
-                </button>
-                <button onclick="createTaskWithType('risk'); toggleFabMenu()" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <span>⚠️ Risk</span>
-                </button>
-                <button onclick="createTaskWithType('assumption'); toggleFabMenu()" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <span>💭 Assumption</span>
-                </button>
-                <button onclick="createTaskWithType('issue'); toggleFabMenu()" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <span>🚨 Issue</span>
-                </button>
-                <button onclick="createTaskWithType('dependency'); toggleFabMenu()" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <span>🔗 Dependency</span>
-                </button>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -912,26 +600,7 @@
             showTypeSelector: false,  // Show/hide floating type selector
             history: [],
             historyIndex: -1,
-            maxHistory: 50,
-            // New UI state
-            hamburgerMenuOpen: false,
-            fabMenuOpen: false,
-            bottomNavView: 'all', // 'all', 'active', 'matrix', 'more'
-            projectSelectorOpen: false,
-            mobileSettingsOpen: false,
-            // Touch/swipe gesture tracking
-            touchStartX: 0,
-            touchStartY: 0,
-            touchStartTime: 0,
-            swipingTaskId: null,
-            swipeDirection: null, // 'left' or 'right'
-            // Mobile bottom sheet state (for details panel)
-            bottomSheetState: 'collapsed', // 'collapsed', 'half', 'full'
-            bottomSheetDragging: false,
-            bottomSheetStartY: 0,
-            bottomSheetCurrentY: 0,
-            // Multi-select state
-            selectedTaskIds: new Set()
+            maxHistory: 50
         };
 
         const SYMBOLS = {
@@ -1284,95 +953,6 @@
                 save();
                 render();
             }
-        }
-
-        // Multi-select Functions
-        function toggleTaskSelection(taskId) {
-            if (state.selectedTaskIds.has(taskId)) {
-                state.selectedTaskIds.delete(taskId);
-            } else {
-                state.selectedTaskIds.add(taskId);
-            }
-            updateBulkActionsToolbar();
-            updateSelectAllCheckbox();
-        }
-
-        function toggleSelectAll() {
-            const tasks = getTasks();
-            if (state.selectedTaskIds.size === tasks.length) {
-                // Deselect all
-                state.selectedTaskIds.clear();
-            } else {
-                // Select all
-                state.selectedTaskIds = new Set(tasks.map(t => t.id));
-            }
-            updateBulkActionsToolbar();
-            render();
-        }
-
-        function clearSelection() {
-            state.selectedTaskIds.clear();
-            updateBulkActionsToolbar();
-            render();
-        }
-
-        function updateBulkActionsToolbar() {
-            const toolbar = document.getElementById('bulkActionsToolbar');
-            const selectedCount = document.getElementById('selectedCount');
-
-            if (state.selectedTaskIds.size > 0) {
-                toolbar?.classList.remove('hidden');
-                if (selectedCount) {
-                    selectedCount.textContent = `${state.selectedTaskIds.size} selected`;
-                }
-            } else {
-                toolbar?.classList.add('hidden');
-            }
-
-            // Update checkboxes
-            document.querySelectorAll('.task-checkbox').forEach(checkbox => {
-                const taskId = checkbox.dataset.taskId;
-                checkbox.checked = state.selectedTaskIds.has(taskId);
-            });
-        }
-
-        function updateSelectAllCheckbox() {
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            if (selectAllCheckbox) {
-                const tasks = getTasks();
-                selectAllCheckbox.checked = tasks.length > 0 && state.selectedTaskIds.size === tasks.length;
-                selectAllCheckbox.indeterminate = state.selectedTaskIds.size > 0 && state.selectedTaskIds.size < tasks.length;
-            }
-        }
-
-        function bulkMarkDone() {
-            if (state.selectedTaskIds.size === 0) return;
-
-            state.selectedTaskIds.forEach(taskId => {
-                const task = getProject().tasks.find(t => t.id === taskId);
-                if (task) {
-                    task.status = task.status === 'done' ? 'active' : 'done';
-                    if (task.status === 'done') {
-                        task.completedAt = new Date().toISOString();
-                    }
-                }
-            });
-
-            clearSelection();
-            save();
-            render();
-        }
-
-        function bulkArchive() {
-            if (state.selectedTaskIds.size === 0) return;
-
-            if (!confirm(`Archive ${state.selectedTaskIds.size} task(s)?`)) return;
-
-            state.selectedTaskIds.forEach(taskId => {
-                archiveTask(taskId);
-            });
-
-            clearSelection();
         }
 
         // RAID Conversion Functions
@@ -1781,74 +1361,9 @@
         }
 
         // Rendering
-        function renderSidebar() {
-            // Render sidebar project list
-            const sidebarProjectList = document.getElementById('sidebarProjectList');
-            if (sidebarProjectList) {
-                const projects = Object.keys(state.projects).map(id => ({
-                    id,
-                    name: state.projects[id].name,
-                    taskCount: Object.values(state.projects[id].tasks || {}).filter(t => !t.archived && t.status !== 'done').length
-                }));
-
-                sidebarProjectList.innerHTML = projects.map(proj => {
-                    const isActive = proj.id === state.currentProject;
-                    return `
-                        <button onclick="switchProject('${proj.id}')" class="w-full text-left px-3 py-2 text-sm rounded ${isActive ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-medium' : 'hover:bg-gray-200 dark:hover:bg-gray-800'} flex items-center justify-between">
-                            <span>${esc(proj.name)}</span>
-                            <span class="text-xs text-gray-500 dark:text-gray-400">${proj.taskCount}</span>
-                        </button>
-                    `;
-                }).join('');
-            }
-
-            // Update view buttons active state
-            const sidebarViewTasks = document.getElementById('sidebarViewTasks');
-            const sidebarViewMatrix = document.getElementById('sidebarViewMatrix');
-            const sidebarViewRaid = document.getElementById('sidebarViewRaid');
-            const sidebarViewArchived = document.getElementById('sidebarViewArchived');
-
-            const activeClass = 'bg-gray-300 dark:bg-gray-700 font-medium';
-            const inactiveClass = 'bg-transparent';
-
-            sidebarViewTasks?.classList.toggle(activeClass, !state.showMatrixView && !state.showRaidView && !state.showArchived);
-            sidebarViewMatrix?.classList.toggle(activeClass, state.showMatrixView);
-            sidebarViewRaid?.classList.toggle(activeClass, state.showRaidView);
-            sidebarViewArchived?.classList.toggle(activeClass, state.showArchived);
-
-            // Sync terminology toggle
-            const sidebarTermLabel = document.getElementById('sidebarTermLabel');
-            const headerTermLabel = document.getElementById('termLabel');
-            if (sidebarTermLabel && headerTermLabel) {
-                sidebarTermLabel.textContent = headerTermLabel.textContent;
-            }
-        }
-
-        function switchToListView() {
-            state.showMatrixView = false;
-            state.showRaidView = false;
-            state.showArchived = false;
-            render();
-        }
-
-        function switchToMatrixView() {
-            state.showMatrixView = true;
-            state.showRaidView = false;
-            state.showArchived = false;
-            render();
-        }
-
-        function switchToRaidView() {
-            state.showMatrixView = false;
-            state.showRaidView = true;
-            state.showArchived = false;
-            render();
-        }
-
         function render() {
             renderProjects();
             renderViewFilter();
-            renderSidebar();
 
             // Toggle between list, matrix, and RAID views
             const taskTable = document.getElementById('taskTable');
@@ -1875,8 +1390,6 @@
             renderDetails();
             updateActionBar();
             updateArchivedCount();
-            updateBulkActionsToolbar();
-            updateSelectAllCheckbox();
         }
 
         function renderViewFilter() {
@@ -2544,10 +2057,6 @@
             if (index !== -1) {
                 state.selectedIndex = index;
                 render();
-                const isMobile = window.innerWidth < 768;
-                if (isMobile && state.bottomSheetState === 'collapsed') {
-                    openBottomSheetToHalf();
-                }
             }
         }
 
@@ -2690,30 +2199,11 @@
             }
 
             let symbol = SYMBOLS[task.status] || SYMBOLS.active;
-            let titleClass = '';
+            let statusClass = '';
             let textClass = '';
-
-            // Card-based styling with flat design (borders only, NO shadows)
-            let cardBorderClass = 'border border-gray-200 dark:border-gray-700';
-            let cardBgClass = 'bg-white dark:bg-gray-900';
-
-            // Status-specific colors for symbols (colorful, not monochrome)
-            const statusColors = {
-                active: 'text-blue-500 dark:text-blue-400',
-                done: 'text-green-600 dark:text-green-500',
-                waiting: 'text-amber-500 dark:text-amber-400',
-                delegated: 'text-purple-500 dark:text-purple-400',
-                reference: 'text-gray-400 dark:text-gray-500'
-            };
-            let statusColorClass = statusColors[task.status] || statusColors.active;
-
-            // Selected state - change border color only (flat design)
-            if (index === state.selectedIndex) {
-                cardBorderClass = 'border-2 border-blue-500 dark:border-blue-400';
-            }
-
-            // Hover state - just border color change
-            const hoverClass = 'hover:border-blue-400 dark:hover:border-blue-500';
+            let bgClass = index === state.selectedIndex
+                ? 'bg-blue-50 dark:bg-blue-950/30 border-l-2 border-blue-500'
+                : 'hover:bg-gray-50 dark:hover:bg-gray-800/50';
 
             // Apply aging logic
             if (isOld && !isDueOrOverdue && task.status !== 'done') {
@@ -2722,17 +2212,23 @@
 
             // Override with due date urgency
             if (isDueOrOverdue && task.status !== 'done') {
-                cardBorderClass = 'border-2 border-red-400 dark:border-red-500';
-                cardBgClass = 'bg-red-50/30 dark:bg-red-950/20';
+                bgClass = index === state.selectedIndex
+                    ? 'bg-red-50 dark:bg-red-950/30 border-l-2 border-red-500'
+                    : 'bg-red-50/50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/40 border-l-2 border-red-400 dark:border-red-500';
                 textClass = '';  // Override greying
             }
 
             if (task.status === 'done') {
-                titleClass = 'line-through opacity-60';
+                statusClass = 'line-through opacity-60';
+            } else if (task.status === 'waiting' && !isDueOrOverdue) {
+                statusClass = 'border-l-2 border-yellow-500 dark:border-yellow-600';
+            } else if (task.status === 'delegated' && !isDueOrOverdue) {
+                statusClass = 'border-l-2 border-purple-500 dark:border-purple-600';
+            } else if (task.status === 'reference' && !isDueOrOverdue) {
+                statusClass = 'border-l-2 border-sky-500 dark:border-sky-600';
             }
 
-            // Card styling: rounded corners, padding, spacing
-            row.className = `${cardBgClass} ${cardBorderClass} ${hoverClass} rounded-lg px-4 py-3 mb-3 cursor-pointer transition-colors ${textClass}`;
+            row.className = `px-4 py-3 border-b border-gray-100 dark:border-gray-700 cursor-pointer ${bgClass} ${statusClass} ${textClass}`;
             row.draggable = true;
             row.dataset.taskId = task.id;
             row.dataset.taskIndex = index;
@@ -2741,60 +2237,18 @@
 
             const priorityInfo = getPriorityDisplay(task.priority);
 
-            // Build metadata chips array
-            let metadataChips = [];
-
-            // Due date chip
-            if (task.dueDate) {
-                const chipBg = isDueOrOverdue ? 'bg-red-100/50 dark:bg-red-900/30' : 'bg-gray-100 dark:bg-gray-800';
-                const chipText = isDueOrOverdue ? 'text-red-700 dark:text-red-400' : 'text-gray-600 dark:text-gray-400';
-                metadataChips.push(`<span class="inline-flex items-center gap-1 px-2 py-1 text-sm ${chipBg} ${chipText} rounded-md border border-gray-300 dark:border-gray-600 cursor-pointer hover:opacity-80 transition-opacity" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'dueDate', ${index})" title="Double-click to edit due date">📅 ${task.dueDate}</span>`);
-            }
-
-            // Priority chip
-            if (task.priority && task.priority !== 'none') {
-                const priorityBg = {
-                    high: 'bg-red-100/50 dark:bg-red-900/30 border-red-300 dark:border-red-700 text-red-700 dark:text-red-400',
-                    medium: 'bg-amber-100/50 dark:bg-amber-900/30 border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-400',
-                    low: 'bg-green-100/50 dark:bg-green-900/30 border-green-300 dark:border-green-700 text-green-700 dark:text-green-400'
-                };
-                metadataChips.push(`<span class="inline-flex items-center gap-1 px-2 py-1 text-sm ${priorityBg[task.priority]} rounded-md border">${priorityInfo.icon} ${priorityInfo.label}</span>`);
-            }
-
-            // Delegated chip
-            if (task.status === 'delegated' && task.delegatedTo && !isEditing) {
-                metadataChips.push(`<span class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-purple-100/50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-md border border-purple-300 dark:border-purple-700 cursor-pointer hover:opacity-80 transition-opacity" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'delegatedTo', ${index})" title="Delegated to: ${esc(task.delegatedTo)}">← @${esc(task.delegatedTo)}</span>`);
-            }
-
-            // Waiting chip
-            if (task.status === 'waiting' && task.waitingOn && !isEditing) {
-                metadataChips.push(`<span class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-amber-100/50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-md border border-amber-300 dark:border-amber-700 cursor-pointer hover:opacity-80 transition-opacity" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'waitingOn', ${index})" title="Waiting on: ${esc(task.waitingOn)}">→ ${esc(task.waitingOn)}</span>`);
-            }
-
-            // Links chip
-            if (task.links && task.links.length > 0) {
-                metadataChips.push(`<span class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-md border border-gray-300 dark:border-gray-600">🔗 ${task.links.length}</span>`);
-            }
-
-            // Notes chip
-            if (task.notes) {
-                metadataChips.push(`<span class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-md border border-gray-300 dark:border-gray-600">📝 Notes</span>`);
-            }
-
             row.innerHTML = `
-                <div class="flex flex-col gap-3">
-                    <!-- Header: Checkbox + Status icon + Title + Archive -->
-                    <div class="flex items-start gap-3">
-                        <!-- Checkbox (Desktop only) -->
-                        <input type="checkbox" class="task-checkbox hidden lg:block w-5 h-5 mt-0.5 rounded border-gray-300 dark:border-gray-600 flex-shrink-0" data-task-id="${task.id}" onclick="event.stopPropagation(); toggleTaskSelection('${task.id}')" title="Select task">
-
-                        <div class="flex items-center gap-2 flex-shrink-0">
-                            <span class="hidden md:inline text-gray-400 cursor-move" title="Drag to reorder">⠿</span>
-                            <button onclick="event.stopPropagation(); cycleStatus('${task.id}')" class="text-xl font-mono ${statusColorClass} hover:opacity-80 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full transition-opacity" title="Click to cycle status">
-                                ${symbol}
-                            </button>
-                        </div>
-                        <div class="flex-1 min-w-0">
+                <div class="flex flex-col md:grid md:grid-cols-12 gap-2 items-start md:items-center">
+                    <div class="md:col-span-1 flex md:block items-center gap-2 w-full md:w-auto">
+                        <span class="text-gray-400 cursor-move mr-1" title="Drag to reorder">⠿</span>
+                        ${task.priority && task.priority !== 'none' ? `<span class="mr-1" title="Priority: ${priorityInfo.label}">${priorityInfo.icon}</span>` : ''}
+                        <button onclick="event.stopPropagation(); cycleStatus('${task.id}')" class="text-lg font-mono text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 min-w-[44px] min-h-[44px] md:w-8 md:h-8 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-700" title="Click to cycle status">
+                            ${symbol}
+                        </button>
+                        <span class="md:hidden text-xs text-gray-500">${task.dueDate ? task.dueDate : ''}</span>
+                    </div>
+                    <div class="md:col-span-7 w-full">
+                        <div class="flex items-center gap-2">
                             ${isEditing && state.editingField === 'content' ? `
                                 <input
                                     type="text"
@@ -2802,42 +2256,43 @@
                                     value="${esc(task.content)}"
                                     onblur="finishEditing('${task.id}', 'content', this.value)"
                                     onkeydown="if(event.key==='Enter') { finishEditing('${task.id}', 'content', this.value); } if(event.key==='Escape') { cancelEditing(); }"
-                                    class="w-full px-3 py-2 text-base bg-white dark:bg-gray-900 border-2 border-blue-500 focus:ring-0 focus:border-blue-600 rounded-md"
+                                    class="flex-1 px-2 py-1 bg-white dark:bg-gray-900 border border-primary-500 focus:ring-2 focus:ring-primary-500 rounded"
                                     placeholder="Task description..."
                                 />
                             ` : `
-                                <div class="text-base leading-6 font-medium text-gray-900 dark:text-gray-100 cursor-text ${titleClass}" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'content', ${index})" title="Double-click to edit: ${esc(task.content)}">
+                                <div class="flex-1 px-2 py-1 cursor-text truncate" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'content', ${index})" title="${esc(task.content)}">
                                     ${esc(task.content) || '<span class="text-gray-400">Task description...</span>'}
                                 </div>
                             `}
+                            ${task.status === 'delegated' && !isEditing ? `
+                                <div class="relative flex-shrink-0">
+                                    ${task.delegatedTo ? `
+                                        <span class="inline-block px-2 py-0.5 text-xs bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-900/30" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'delegatedTo', ${index})" title="Delegated to: ${esc(task.delegatedTo)}">
+                                            → @${esc(task.delegatedTo)}
+                                        </span>
+                                    ` : `
+                                        <span class="inline-block px-2 py-0.5 text-xs bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-900/30" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'delegatedTo', ${index})" title="Set who this is delegated to">
+                                            →
+                                        </span>
+                                    `}
+                                </div>
+                            ` : ''}
+                            ${task.status === 'waiting' && !isEditing ? `
+                                <div class="relative flex-shrink-0">
+                                    ${task.waitingOn ? `
+                                        <span class="inline-block px-2 py-0.5 text-xs bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 rounded cursor-pointer hover:bg-yellow-100 dark:hover:bg-yellow-900/30" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'waitingOn', ${index})" title="Waiting on: ${esc(task.waitingOn)}">
+                                            ⏸ ${esc(task.waitingOn)}
+                                        </span>
+                                    ` : `
+                                        <span class="inline-block px-2 py-0.5 text-xs bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 rounded cursor-pointer hover:bg-yellow-100 dark:hover:bg-yellow-900/30" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'waitingOn', ${index})" title="Set what you're waiting on">
+                                            ⏸
+                                        </span>
+                                    `}
+                                </div>
+                            ` : ''}
                         </div>
-                        <button onclick="event.stopPropagation(); if(confirm('${TERMINOLOGY[state.terminology].archive}?')) archiveTask('${task.id}')" class="text-gray-400 hover:text-red-500 min-w-[44px] min-h-[44px] flex items-center justify-center flex-shrink-0 transition-colors" title="${TERMINOLOGY[state.terminology].archive}">
-                            🗑️
-                        </button>
-                    </div>
-
-                    <!-- Metadata chips row -->
-                    ${metadataChips.length > 0 || isEditing ? `
-                        <div class="flex flex-wrap items-center gap-2 pl-14 lg:pl-20">
-                            ${metadataChips.join('')}
-                            ${!task.dueDate && !isEditing ? `<span class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-md border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'dueDate', ${index})" title="Double-click to set due date">📅 Set due date</span>` : ''}
-                        </div>
-                    ` : ''}
-
-                    <!-- Editing field for delegatedTo/waitingOn/dueDate -->
-                    ${isEditing && (state.editingField === 'delegatedTo' || state.editingField === 'waitingOn' || state.editingField === 'dueDate') ? `
-                        <div class="pl-14 lg:pl-20 relative">
-                            ${state.editingField === 'dueDate' ? `
-                                <input
-                                    type="text"
-                                    id="editInput"
-                                    value="${task.dueDate || ''}"
-                                    onblur="finishEditing('${task.id}', 'dueDate', this.value)"
-                                    onkeydown="if(event.key==='Enter') { finishEditing('${task.id}', 'dueDate', this.value); } if(event.key==='Escape') { cancelEditing(); }"
-                                    class="w-full max-w-xs px-3 py-2 text-sm bg-white dark:bg-gray-900 border-2 border-blue-500 focus:ring-0 focus:border-blue-600 rounded-md"
-                                    placeholder="tomorrow, next week, Q1..."
-                                />
-                            ` : `
+                        ${isEditing && (state.editingField === 'delegatedTo' || state.editingField === 'waitingOn') ? `
+                            <div class="mt-1 relative">
                                 <input
                                     type="text"
                                     id="editInput"
@@ -2845,14 +2300,34 @@
                                     oninput="updateSuggestions(this.value, '${state.editingField}')"
                                     onblur="setTimeout(() => { finishEditing('${task.id}', '${state.editingField}', this.value); }, 150)"
                                     onkeydown="handleAutocompleteKey(event, '${task.id}', '${state.editingField}')"
-                                    class="w-full max-w-xs px-3 py-2 text-sm bg-white dark:bg-gray-900 border-2 ${state.editingField === 'delegatedTo' ? 'border-purple-500 focus:border-purple-600' : 'border-amber-500 focus:border-amber-600'} focus:ring-0 rounded-md"
+                                    class="w-full px-2 py-1 text-xs bg-white dark:bg-gray-900 border ${state.editingField === 'delegatedTo' ? 'border-purple-500' : 'border-yellow-500'} focus:ring-2 ${state.editingField === 'delegatedTo' ? 'focus:ring-purple-500 text-purple-600 dark:text-purple-400' : 'focus:ring-yellow-500 text-yellow-600 dark:text-yellow-400'} rounded"
                                     placeholder="${state.editingField === 'delegatedTo' ? 'Delegated to... (type to search)' : 'Waiting on... (type to search)'}"
                                     autocomplete="off"
                                 />
-                                <div id="suggestions" class="absolute z-10 w-full max-w-xs mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md max-h-32 overflow-y-auto shadow-lg"></div>
-                            `}
-                        </div>
-                    ` : ''}
+                                <div id="suggestions" class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded shadow-lg max-h-32 overflow-y-auto"></div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="hidden md:block md:col-span-3" ondblclick="event.stopPropagation(); startEditing('${task.id}', 'dueDate', ${index})">
+                        ${isEditing && state.editingField === 'dueDate' ? `
+                            <input
+                                type="text"
+                                id="editInput"
+                                value="${task.dueDate || ''}"
+                                onblur="finishEditing('${task.id}', 'dueDate', this.value)"
+                                onkeydown="if(event.key==='Enter') { finishEditing('${task.id}', 'dueDate', this.value); } if(event.key==='Escape') { cancelEditing(); }"
+                                class="w-full px-2 py-1 text-sm bg-white dark:bg-gray-900 border border-primary-500 focus:ring-2 focus:ring-primary-500 rounded ${dueDateClass}"
+                                placeholder="tomorrow, Q1..."
+                            />
+                        ` : `
+                            <div class="px-2 py-1 text-sm cursor-text ${dueDateClass}">${task.dueDate || '<span class="text-gray-400">-</span>'}</div>
+                        `}
+                    </div>
+                    <div class="hidden md:block md:col-span-1">
+                        <button onclick="event.stopPropagation(); if(confirm('${TERMINOLOGY[state.terminology].archive}?')) archiveTask('${task.id}')" class="text-gray-400 hover:text-red-500 text-sm min-w-[44px] min-h-[44px] flex items-center justify-center" title="${TERMINOLOGY[state.terminology].archive}">
+                            ×
+                        </button>
+                    </div>
                 </div>
             `;
 
@@ -2951,21 +2426,8 @@
                 const trigger = document.getElementById('typeSelectorTrigger');
                 if (trigger) {
                     const rect = trigger.getBoundingClientRect();
-                    const isMobile = window.innerWidth < 768;
-
-                    if (isMobile) {
-                        // Mobile: Center the panel horizontally, position below trigger with safe margins
-                        panel.style.top = `${Math.min(rect.bottom + 8, window.innerHeight - 400)}px`;
-                        panel.style.left = '50%';
-                        panel.style.transform = 'translateX(-50%)';
-                        panel.style.right = 'auto';
-                    } else {
-                        // Desktop: Position to the right of trigger
-                        panel.style.top = `${rect.bottom + 8}px`;
-                        panel.style.right = `${window.innerWidth - rect.right}px`;
-                        panel.style.left = 'auto';
-                        panel.style.transform = 'none';
-                    }
+                    panel.style.top = `${rect.bottom + 8}px`;
+                    panel.style.right = `${window.innerWidth - rect.right}px`;
                 }
             } else {
                 panel.classList.add('hidden');
@@ -3378,326 +2840,30 @@ ${getRaidDetailsSection(task)}
             }
         }
 
-        // New Navigation Functions
-        function toggleHamburgerMenu() {
-            state.hamburgerMenuOpen = !state.hamburgerMenuOpen;
-            const menu = document.getElementById('hamburgerMenu');
-            const drawer = document.getElementById('hamburgerDrawer');
-
-            if (state.hamburgerMenuOpen) {
-                menu.classList.remove('hidden');
-                setTimeout(() => {
-                    drawer.style.transform = 'translateX(0)';
-                }, 10);
-                // Populate projects in hamburger
-                updateHamburgerProjects();
-            } else {
-                drawer.style.transform = 'translateX(-100%)';
-                setTimeout(() => {
-                    menu.classList.add('hidden');
-                }, 300);
-            }
-        }
-
-        function toggleFabMenu() {
-            state.fabMenuOpen = !state.fabMenuOpen;
-            const fabMenu = document.getElementById('fabMenu');
-            const fab = document.getElementById('fab');
-
-            if (state.fabMenuOpen) {
-                fabMenu.classList.remove('hidden');
-                fab.style.transform = 'rotate(45deg)';
-            } else {
-                fabMenu.classList.add('hidden');
-                fab.style.transform = 'rotate(0deg)';
-            }
-        }
-
-        function setBottomNavView(view) {
-            state.bottomNavView = view;
-
-            // Update bottom nav button states
-            const buttons = document.querySelectorAll('#bottomNav button');
-            buttons.forEach(btn => {
-                if (btn.dataset.nav === view) {
-                    btn.classList.remove('text-gray-600', 'dark:text-gray-400');
-                    btn.classList.add('text-blue-600', 'dark:text-blue-400');
-                } else {
-                    btn.classList.remove('text-blue-600', 'dark:text-blue-400');
-                    btn.classList.add('text-gray-600', 'dark:text-gray-400');
-                }
-            });
-
-            // Update view based on bottom nav selection
-            switch(view) {
-                case 'all':
-                    state.viewFilter = 'all';
-                    state.showMatrixView = false;
-                    state.showRaidView = false;
-                    state.showArchived = false;
-                    break;
-                case 'active':
-                    state.viewFilter = 'active';
-                    state.showMatrixView = false;
-                    state.showRaidView = false;
-                    state.showArchived = false;
-                    break;
-                case 'matrix':
-                    state.showMatrixView = true;
-                    state.showRaidView = false;
-                    state.showArchived = false;
-                    break;
-                case 'more':
-                    // More tab doesn't change view, just indicates menu is available
-                    break;
-            }
-
-            render();
-        }
-
-        function setView(viewName) {
-            switch(viewName) {
-                case 'tasks':
-                    state.showMatrixView = false;
-                    state.showRaidView = false;
-                    state.viewFilter = 'all';
-                    setBottomNavView('all');
-                    break;
-                case 'matrix':
-                    state.showMatrixView = true;
-                    state.showRaidView = false;
-                    setBottomNavView('matrix');
-                    break;
-                case 'raid':
-                    state.showMatrixView = false;
-                    state.showRaidView = true;
-                    break;
-            }
-            render();
-        }
-
-        function toggleArchived() {
-            state.showArchived = !state.showArchived;
-            render();
-        }
-
-        function createTaskWithType(type) {
-            state.newTaskType = type;
-            // Focus on creating a new task
-            const newTaskInput = document.getElementById('newTaskInput');
-            if (newTaskInput) {
-                newTaskInput.focus();
-            }
-        }
-
-        function toggleProjectSelector() {
-            state.projectSelectorOpen = !state.projectSelectorOpen;
-            // TODO: Show project selector modal
-        }
-
-        function toggleMobileSettings() {
-            state.mobileSettingsOpen = !state.mobileSettingsOpen;
-            // TODO: Show mobile settings modal
-        }
-
-        function switchProject(projectId) {
-            state.currentProject = projectId;
-
-            // Update mobile header project name
-            const currentProjectName = document.getElementById('currentProjectName');
-            if (currentProjectName && state.projects[projectId]) {
-                currentProjectName.textContent = state.projects[projectId].name;
-            }
-
-            save();
-            render();
-        }
-
-        function updateHamburgerProjects() {
-            const container = document.getElementById('hamburgerProjectList');
-            if (!container) return;
-
-            const projects = Object.values(state.projects);
-            container.innerHTML = projects.map(proj => `
-                <button onclick="switchProject('${proj.id}'); toggleHamburgerMenu()"
-                        class="w-full px-3 py-2 text-left text-sm rounded-lg ${proj.id === state.currentProject ? 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}">
-                    ${proj.name}
-                </button>
-            `).join('');
-
-            // Update archived count in hamburger
-            const archivedCount = Object.values(state.projects[state.currentProject]?.tasks || {})
-                .filter(t => t.archived).length;
-            const hamburgerArchivedCount = document.getElementById('hamburgerArchivedCount');
-            if (hamburgerArchivedCount) {
-                hamburgerArchivedCount.textContent = archivedCount;
-            }
-        }
-
-        function setBottomSheetState(newState) {
-            const isMobile = window.innerWidth < 768;
-            if (!isMobile) return;
-            state.bottomSheetState = newState;
-            const container = document.getElementById('detailsPanelContainer');
-            const backdrop = document.getElementById('detailsBackdrop');
-            if (newState === 'collapsed') {
-                container.style.height = '60vh';
-                container.style.transform = 'translateY(100%)';
-                backdrop.style.opacity = '0';
-                backdrop.style.pointerEvents = 'none';
-            } else if (newState === 'half') {
-                container.style.height = '60vh';
-                container.style.transform = 'translateY(0)';
-                backdrop.style.opacity = '0.5';
-                backdrop.style.pointerEvents = 'auto';
-            } else if (newState === 'full') {
-                container.style.height = '100vh';
-                container.style.transform = 'translateY(0)';
-                backdrop.style.opacity = '0.5';
-                backdrop.style.pointerEvents = 'auto';
-            }
-        }
-
-        function closeBottomSheet() {
-            setBottomSheetState('collapsed');
-            state.detailsExpanded = false;
-        }
-
-        function openBottomSheetToHalf() {
-            setBottomSheetState('half');
-            state.detailsExpanded = true;
-        }
-
-        function openBottomSheetToFull() {
-            setBottomSheetState('full');
-            state.detailsExpanded = true;
-        }
-
         function toggleDetails() {
-            const isMobile = window.innerWidth < 768;
-            if (isMobile) {
-                if (state.bottomSheetState === 'collapsed') {
-                    openBottomSheetToHalf();
-                } else if (state.bottomSheetState === 'half') {
-                    openBottomSheetToFull();
-                } else {
-                    closeBottomSheet();
-                }
-                return;
-            }
             state.detailsExpanded = !state.detailsExpanded;
             const container = document.getElementById('detailsPanelContainer');
             const toggle = document.getElementById('detailsToggle');
             const mainContent = document.getElementById('mainContent');
             const floatingToggle = document.getElementById('floatingDetailsToggle');
 
+            // Detect if mobile (< 768px)
+            const isMobile = window.innerWidth < 768;
+
             if (state.detailsExpanded) {
+                // Expanded: slide in
                 container.style.transform = 'translateX(0)';
                 toggle.textContent = '▶';
-                mainContent.style.marginRight = '30%';
+                // Only push content on desktop, not on mobile
+                mainContent.style.marginRight = isMobile ? '0' : '30%';
                 floatingToggle.classList.add('hidden');
             } else {
+                // Collapsed: slide out
                 container.style.transform = 'translateX(100%)';
                 toggle.textContent = '◀';
                 mainContent.style.marginRight = '0';
                 floatingToggle.classList.remove('hidden');
             }
-        }
-
-        function initBottomSheetDrag() {
-            const handle = document.getElementById('bottomSheetHandle');
-            const container = document.getElementById('detailsPanelContainer');
-            let startY = 0;
-            let startHeight = 0;
-            let isDragging = false;
-
-            function onTouchStart(e) {
-                const isMobile = window.innerWidth < 768;
-                if (!isMobile || state.bottomSheetState === 'collapsed') return;
-                isDragging = true;
-                startY = e.touches[0].clientY;
-                startHeight = container.offsetHeight;
-                state.bottomSheetDragging = true;
-                container.style.transition = 'none';
-            }
-
-            function onTouchMove(e) {
-                if (!isDragging) return;
-                const currentY = e.touches[0].clientY;
-                const deltaY = currentY - startY;
-                const newHeight = startHeight - deltaY;
-                const windowHeight = window.innerHeight;
-                const clampedHeight = Math.max(0, Math.min(windowHeight, newHeight));
-                container.style.height = `${clampedHeight}px`;
-                const backdrop = document.getElementById('detailsBackdrop');
-                const opacity = Math.min(0.5, (clampedHeight / windowHeight) * 0.5);
-                backdrop.style.opacity = opacity.toString();
-                e.preventDefault();
-            }
-
-            function onTouchEnd(e) {
-                if (!isDragging) return;
-                isDragging = false;
-                state.bottomSheetDragging = false;
-                container.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                const finalHeight = container.offsetHeight;
-                const windowHeight = window.innerHeight;
-                const heightPercent = (finalHeight / windowHeight) * 100;
-                if (heightPercent < 30) {
-                    closeBottomSheet();
-                } else if (heightPercent < 80) {
-                    setBottomSheetState('half');
-                } else {
-                    setBottomSheetState('full');
-                }
-            }
-
-            handle.addEventListener('touchstart', onTouchStart, { passive: false });
-            handle.addEventListener('touchmove', onTouchMove, { passive: false });
-            handle.addEventListener('touchend', onTouchEnd, { passive: true });
-
-            handle.addEventListener('mousedown', (e) => {
-                const isMobile = window.innerWidth < 768;
-                if (!isMobile || state.bottomSheetState === 'collapsed') return;
-                isDragging = true;
-                startY = e.clientY;
-                startHeight = container.offsetHeight;
-                container.style.transition = 'none';
-
-                const onMouseMove = (e) => {
-                    if (!isDragging) return;
-                    const currentY = e.clientY;
-                    const deltaY = currentY - startY;
-                    const newHeight = startHeight - deltaY;
-                    const windowHeight = window.innerHeight;
-                    const clampedHeight = Math.max(0, Math.min(windowHeight, newHeight));
-                    container.style.height = `${clampedHeight}px`;
-                    const backdrop = document.getElementById('detailsBackdrop');
-                    const opacity = Math.min(0.5, (clampedHeight / windowHeight) * 0.5);
-                    backdrop.style.opacity = opacity.toString();
-                };
-
-                const onMouseUp = () => {
-                    if (!isDragging) return;
-                    isDragging = false;
-                    container.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                    const finalHeight = container.offsetHeight;
-                    const windowHeight = window.innerHeight;
-                    const heightPercent = (finalHeight / windowHeight) * 100;
-                    if (heightPercent < 30) {
-                        closeBottomSheet();
-                    } else if (heightPercent < 80) {
-                        setBottomSheetState('half');
-                    } else {
-                        setBottomSheetState('full');
-                    }
-                    document.removeEventListener('mousemove', onMouseMove);
-                    document.removeEventListener('mouseup', onMouseUp);
-                };
-
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('mouseup', onMouseUp);
-            });
         }
 
         function startLinking(taskId) {
@@ -4014,31 +3180,6 @@ ${getRaidDetailsSection(task)}
             }
         };
 
-        // Sidebar toggles
-        const sidebarTerminologyToggle = document.getElementById('sidebarTerminologyToggle');
-        if (sidebarTerminologyToggle) {
-            sidebarTerminologyToggle.onclick = () => {
-                state.terminology = state.terminology === 'dashPlus' ? 'fiveD' : 'dashPlus';
-                document.getElementById('termLabel').textContent = state.terminology === 'dashPlus' ? '-+' : '5D';
-                localStorage.setItem('terminology', state.terminology);
-                render();
-            };
-        }
-
-        const sidebarThemeToggle = document.getElementById('sidebarThemeToggle');
-        if (sidebarThemeToggle) {
-            sidebarThemeToggle.onclick = () => {
-                const html = document.documentElement;
-                if (html.classList.contains('dark')) {
-                    html.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                } else {
-                    html.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                }
-            };
-        }
-
         document.getElementById('newProjectBtn').onclick = () => {
             const pid = id();
             state.projects[pid] = { name: 'New Project', tasks: [] };
@@ -4047,194 +3188,6 @@ ${getRaidDetailsSection(task)}
             save();
             render();
         };
-
-        // Touch gesture handlers for mobile swipe actions
-        function handleTouchStart(event, taskId) {
-            // Only on mobile
-            if (window.innerWidth >= 768) return;
-
-            const touch = event.touches[0];
-            state.touchStartX = touch.clientX;
-            state.touchStartY = touch.clientY;
-            state.touchStartTime = Date.now();
-            state.swipingTaskId = taskId;
-            state.swipeDirection = null;
-
-            const row = event.currentTarget;
-            row.classList.add('swiping');
-        }
-
-        function handleTouchMove(event, taskId) {
-            // Only on mobile
-            if (window.innerWidth >= 768) return;
-            if (!state.swipingTaskId) return;
-
-            const touch = event.touches[0];
-            const deltaX = touch.clientX - state.touchStartX;
-            const deltaY = touch.clientY - state.touchStartY;
-
-            // Determine if horizontal swipe (not vertical scroll)
-            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
-                event.preventDefault(); // Prevent scrolling
-
-                const row = document.querySelector(`[data-task-id="${state.swipingTaskId}"]`);
-                if (!row) return;
-
-                // Apply transform to the row
-                row.style.transform = `translateX(${deltaX}px)`;
-
-                // Show appropriate action buttons based on swipe direction
-                if (deltaX < -50) {
-                    // Swipe left - show right-side actions
-                    state.swipeDirection = 'left';
-                    showSwipeActions(state.swipingTaskId, 'right');
-                } else if (deltaX > 50) {
-                    // Swipe right - show left-side action
-                    state.swipeDirection = 'right';
-                    showSwipeActions(state.swipingTaskId, 'left');
-                } else {
-                    state.swipeDirection = null;
-                    hideSwipeActions(state.swipingTaskId);
-                }
-            }
-        }
-
-        function handleTouchEnd(event, taskId) {
-            // Only on mobile
-            if (window.innerWidth >= 768) return;
-            if (!state.swipingTaskId) return;
-
-            const touch = event.changedTouches[0];
-            const deltaX = touch.clientX - state.touchStartX;
-            const deltaY = touch.clientY - state.touchStartY;
-            const deltaTime = Date.now() - state.touchStartTime;
-
-            const row = document.querySelector(`[data-task-id="${state.swipingTaskId}"]`);
-            if (!row) return;
-
-            row.classList.remove('swiping');
-
-            // Check if this was a swipe or a tap
-            const isSwipe = Math.abs(deltaX) > 50 && deltaTime < 300;
-
-            if (isSwipe) {
-                if (deltaX < -50) {
-                    // Swipe left - keep actions visible
-                    row.style.transform = 'translateX(-180px)';
-                    // Haptic feedback
-                    if (navigator.vibrate) navigator.vibrate(10);
-                } else if (deltaX > 50) {
-                    // Swipe right - cycle status
-                    cycleStatus(taskId);
-                    row.style.transform = 'translateX(0)';
-                    hideSwipeActions(taskId);
-                    // Haptic feedback
-                    if (navigator.vibrate) navigator.vibrate(10);
-                }
-            } else {
-                // Not a swipe - reset position
-                row.style.transform = 'translateX(0)';
-                hideSwipeActions(taskId);
-
-                // If it was a quick tap, select the task
-                if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10 && deltaTime < 200) {
-                    selectTaskByClick(row);
-                }
-            }
-
-            state.swipingTaskId = null;
-            state.swipeDirection = null;
-        }
-
-        function showSwipeActions(taskId, side) {
-            // Check if actions already exist
-            let actionsContainer = document.getElementById(`swipe-actions-${taskId}-${side}`);
-            if (actionsContainer) {
-                actionsContainer.style.display = 'flex';
-                return;
-            }
-
-            // Create action buttons
-            const row = document.querySelector(`[data-task-id="${taskId}"]`);
-            if (!row) return;
-
-            const wrapper = row.parentElement;
-            if (!wrapper || !wrapper.classList.contains('task-row-wrapper')) return;
-
-            actionsContainer = document.createElement('div');
-            actionsContainer.id = `swipe-actions-${taskId}-${side}`;
-            actionsContainer.className = `swipe-actions swipe-actions-${side}`;
-
-            if (side === 'right') {
-                // Right-side actions (swipe left to reveal)
-                actionsContainer.innerHTML = `
-                    <button class="swipe-action swipe-action-done" onclick="event.stopPropagation(); toggleDone('${taskId}'); resetSwipe('${taskId}');">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        <span>Done</span>
-                    </button>
-                    <button class="swipe-action swipe-action-delete" onclick="event.stopPropagation(); if(confirm('Archive this task?')) { archiveTask('${taskId}'); resetSwipe('${taskId}'); }">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                        </svg>
-                        <span>Delete</span>
-                    </button>
-                    <button class="swipe-action swipe-action-more" onclick="event.stopPropagation(); selectTaskById('${taskId}'); resetSwipe('${taskId}');">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                        </svg>
-                        <span>More</span>
-                    </button>
-                `;
-            } else {
-                // Left-side action (swipe right to reveal)
-                actionsContainer.innerHTML = `
-                    <button class="swipe-action swipe-action-status">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                        </svg>
-                        <span>Cycle Status</span>
-                    </button>
-                `;
-            }
-
-            wrapper.appendChild(actionsContainer);
-        }
-
-        function hideSwipeActions(taskId) {
-            ['left', 'right'].forEach(side => {
-                const actionsContainer = document.getElementById(`swipe-actions-${taskId}-${side}`);
-                if (actionsContainer) {
-                    actionsContainer.style.display = 'none';
-                }
-            });
-        }
-
-        function resetSwipe(taskId) {
-            const row = document.querySelector(`[data-task-id="${taskId}"]`);
-            if (row) {
-                row.style.transform = 'translateX(0)';
-                hideSwipeActions(taskId);
-            }
-        }
-
-        function selectTaskByClick(row) {
-            const index = parseInt(row.dataset.taskIndex);
-            if (!isNaN(index)) {
-                state.selectedIndex = index;
-                render();
-            }
-        }
-
-        function selectTaskById(taskId) {
-            const tasks = getFilteredTasks();
-            const index = tasks.findIndex(t => t.id === taskId);
-            if (index !== -1) {
-                state.selectedIndex = index;
-                render();
-            }
-        }
 
         // Initialize
         window.addEventListener('DOMContentLoaded', () => {
@@ -4248,18 +3201,6 @@ ${getRaidDetailsSection(task)}
             }
             load();
             render();
-            initBottomSheetDrag();
-
-            document.addEventListener('focusin', (e) => {
-                const isMobile = window.innerWidth < 768;
-                const detailsPanel = document.getElementById('detailsPanelContainer');
-                const isInDetailsPanel = detailsPanel && detailsPanel.contains(e.target);
-                if (isMobile && isInDetailsPanel && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
-                    if (state.bottomSheetState === 'half') {
-                        openBottomSheetToFull();
-                    }
-                }
-            });
         });
     </script>
 </body>
