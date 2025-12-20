@@ -973,19 +973,22 @@
             const newTaskInput = document.getElementById('newTaskInput');
             const isInputFocused = document.activeElement === newTaskInput;
 
-            // If input is focused, handle Enter and allow arrow navigation
+            // If input is focused, only handle specific keys
             if (isInputFocused) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     createTask(newTaskInput.value);
                     newTaskInput.value = '';
                     setInputSelected();
+                    return;
                 }
                 // Allow arrow keys to navigate away from input
                 if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                     e.preventDefault();
                     newTaskInput.blur();
                     // Let it fall through to navigation handler
+                } else if (e.key === 'n') {
+                    // Let 'n' fall through to keep focus on input
                 } else {
                     return;
                 }
