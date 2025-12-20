@@ -11,6 +11,7 @@
     <title>Dash-Plus Notes</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23000' width='192' height='192'/><text x='50%' y='50%' font-size='120' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='%23fff'>−</text></svg>">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/outline/index.min.css">
     <style>
         /* ========== RESET & BASE ========== */
         * {
@@ -305,6 +306,13 @@
 
         .status-button:active {
             transform: scale(0.95);
+        }
+
+        .status-button-carried svg {
+            opacity: 0.7;
+            border: 2px dashed currentColor;
+            border-radius: 50%;
+            padding: 2px;
         }
 
         /* ========== TASK CONTENT ========== */
@@ -648,35 +656,27 @@
         /* ========== STATE ========== */
         const STORAGE_KEY = 'dashplus-tasks';
 
-        // Heroicons SVG helper
-        const getIcon = (name, size = '20') => {
-            const icons = {
-                // Status icons (non-circled/fresh)
-                plusCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
-                minusCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M9 12h6m6 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
-                arrowRightCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
-                arrowLeftCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M11 15l-3-3m0 0l3-3m-3 3h13m0 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
-                stopCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M9 9h6v6H9V9z" fill="currentColor" opacity="0.3"/><circle cx="12" cy="12" r="9"/></svg>`,
-                ellipsisHorizontalCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M8 12a1 1 0 11-2 0 1 1 0 012 0zm5 0a1 1 0 11-2 0 1 1 0 012 0zm5 0a1 1 0 11-2 0 1 1 0 012 0z" fill="currentColor"/><circle cx="12" cy="12" r="9"/></svg>`,
-                userCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M17.982 18.725A7.488 7.488 0 0012.5 15a7.488 7.488 0 00-5.482 3.725m11.964 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275m11.963 0A7.488 7.488 0 0023 12a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0zm-6-6.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/></svg>`,
-                calendarDays: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M6 4h12v16H6V4zm2 5h2v2H8V9zm4 0h2v2h-2V9zm4 0h2v2h-2V9zm-8 4h2v2H8v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zM7 2v2M17 2v2M3 10h18"/></svg>`,
-
-                // Circled versions (carried forward)
-                plusCircleCarried: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="10" stroke-dasharray="2,2" opacity="0.6"/><path d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
-                minusCircleCarried: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="10" stroke-dasharray="2,2" opacity="0.6"/><path d="M9 12h6m6 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
-                arrowLeftCircleCarried: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="10" stroke-dasharray="2,2" opacity="0.6"/><path d="M11 15l-3-3m0 0l3-3m-3 3h13m0 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
-                stopCircleCarried: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="10" stroke-dasharray="2,2" opacity="0.6"/><path d="M9 9h6v6H9V9z" fill="currentColor" opacity="0.3"/><circle cx="12" cy="12" r="9"/></svg>`,
-                ellipsisHorizontalCircleCarried: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="10" stroke-dasharray="2,2" opacity="0.6"/><path d="M8 12a1 1 0 11-2 0 1 1 0 012 0zm5 0a1 1 0 11-2 0 1 1 0 012 0zm5 0a1 1 0 11-2 0 1 1 0 012 0z" fill="currentColor"/><circle cx="12" cy="12" r="9"/></svg>`
+        // Heroicons icon helper - uses CDN
+        const getIcon = (name) => {
+            const iconMap = {
+                // Status icons (fresh - from CDN outline)
+                minusCircle: '<svg class="heroicon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75l6 0m.75-3l-1.5-1.5m0 0L21 3M3 3l1.5 1.5m0 0L3 6m0 0l1.5 1.5M3 12l1.5-1.5m0 0L3 9m0 0l1.5 1.5M21 12l-1.5-1.5m0 0L21 9m0 0l-1.5 1.5M21 12l-1.5 1.5m0 0L21 15m0 0l-1.5-1.5m0 0L21 12m0 3l-1.5 1.5M3 12l1.5 1.5m0 0L3 15m0 0l1.5-1.5" /></svg>',
+                ellipsisHorizontalCircle: '<svg class="heroicon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25c5.385 0 9.75 4.365 9.75 9.75s-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12 6.615 2.25 12 2.25zM9.75 9.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm.75 2.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0zm7.5-.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0z" /></svg>',
+                arrowLeftCircle: '<svg class="heroicon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25c5.385 0 9.75 4.365 9.75 9.75S17.385 21.75 12 21.75 2.25 17.385 2.25 12 6.615 2.25 12 2.25zm-4.5 9a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zM9 9.75a.75.75 0 1 0-1.5 0A.75.75 0 0 0 9 9.75zm4.5.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zM15 9.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0z" /></svg>',
+                stopCircle: '<svg class="heroicon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 8.25H12m0 0H15.75M12 8.25v3.75M12 15.75v3.75m7.5-11.25c0 5.385-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12 6.615 2.25 12 2.25s9.75 4.365 9.75 9.75z" /></svg>',
+                plusCircle: '<svg class="heroicon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25c5.385 0 9.75 4.365 9.75 9.75S17.385 21.75 12 21.75 2.25 17.385 2.25 12 6.615 2.25 12 2.25zm0 3.75a.75.75 0 0 0-.75.75v2.25H8.25a.75.75 0 0 0 0 1.5h3v2.25a.75.75 0 0 0 1.5 0v-2.25h2.25a.75.75 0 0 0 0-1.5h-2.25V6.75a.75.75 0 0 0-.75-.75z" /></svg>',
+                calendarDays: '<svg class="heroicon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-6.75-6h2.25m-9 2.25h4.5m.75-2.25h2.25" /></svg>',
+                userCircle: '<svg class="heroicon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15a7.488 7.488 0 0 0-5.982 3.725m11.964 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275m11.963 0A23.745 23.745 0 0 1 12 19.5" /></svg>'
             };
-            return icons[name] || '';
+            return iconMap[name] || '';
         };
 
         const STATUS_INFO = {
-            active: { label: '−', desc: 'Current task', svg: 'minusCircle', svgCarried: 'minusCircleCarried' },
-            waiting: { label: '⏸', desc: 'Blocked', svg: 'ellipsisHorizontalCircle', svgCarried: 'ellipsisHorizontalCircleCarried' },
-            delegated: { label: '<', desc: 'Delegated', svg: 'arrowLeftCircle', svgCarried: 'arrowLeftCircleCarried' },
-            reference: { label: '◆', desc: 'Reference', svg: 'stopCircle', svgCarried: 'stopCircleCarried' },
-            done: { label: '+', desc: 'Done', svg: 'plusCircle', svgCarried: 'plusCircleCarried' }
+            active: { label: '−', desc: 'Current task', svg: 'minusCircle' },
+            waiting: { label: '⏸', desc: 'Blocked', svg: 'ellipsisHorizontalCircle' },
+            delegated: { label: '<', desc: 'Delegated', svg: 'arrowLeftCircle' },
+            reference: { label: '◆', desc: 'Reference', svg: 'stopCircle' },
+            done: { label: '+', desc: 'Done', svg: 'plusCircle' }
         };
 
         // Check if task was created today
@@ -687,11 +687,15 @@
             return taskDate.toDateString() === today.toDateString();
         }
 
-        // Get icon name based on status and whether task was created today
+        // Get icon name based on status
         function getStatusIcon(status, createdAt) {
             const info = STATUS_INFO[status];
-            if (!info) return 'minusCircle';
-            return isCreatedToday(createdAt) ? info.svg : info.svgCarried;
+            return info ? info.svg : 'minusCircle';
+        }
+
+        // Apply circle styling to icon if task was carried forward
+        function getStatusButtonClass(createdAt) {
+            return !isCreatedToday(createdAt) ? 'status-button-carried' : '';
         }
         const STATUS_ORDER = ['active', 'waiting', 'delegated', 'reference', 'done'];
 
@@ -753,7 +757,7 @@
 
             // Status button
             const statusBtn = document.createElement('button');
-            statusBtn.className = 'status-button';
+            statusBtn.className = `status-button ${getStatusButtonClass(task.createdAt)}`;
             const iconName = getStatusIcon(task.status, task.createdAt);
             statusBtn.innerHTML = getIcon(iconName);
             statusBtn.title = STATUS_INFO[task.status].desc;
