@@ -656,10 +656,11 @@
         </div>
         <div class="keyboard-help-section">
             <div class="keyboard-help-title">Status</div>
-            <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'done'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">d</span><span class="keyboard-help-desc">Done</span></button>
-            <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'waiting'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">></span><span class="keyboard-help-desc">Wait</span></button>
-            <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'delegated'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">&lt;</span><span class="keyboard-help-desc">Deleg</span></button>
-            <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'reference'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">r</span><span class="keyboard-help-desc">Ref</span></button>
+            <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'active'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">−</span><span class="keyboard-help-desc">Active</span></button>
+            <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'done'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">+</span><span class="keyboard-help-desc">Done</span></button>
+            <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'waiting'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">→</span><span class="keyboard-help-desc">Wait</span></button>
+            <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'delegated'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">←</span><span class="keyboard-help-desc">Deleg</span></button>
+            <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'reference'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">◆</span><span class="keyboard-help-desc">Ref</span></button>
         </div>
         <div class="keyboard-help-section">
             <div class="keyboard-help-title">Edit</div>
