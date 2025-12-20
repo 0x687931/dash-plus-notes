@@ -72,15 +72,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                         </svg>
                     </button>
-                    <button id="taskViewToggle" class="px-3 py-1.5 text-xs bg-blue-100 dark:bg-blue-950 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg" title="Show task list view">
-                        <span>📝 Tasks</span>
-                    </button>
-                    <button id="matrixViewToggle" class="px-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg" title="Toggle Eisenhower Matrix view">
-                        <span id="matrixLabel">📊 Matrix</span>
-                    </button>
-                    <button id="raidViewToggle" class="px-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg" title="Toggle RAID Log view">
-                        <span id="raidLabel">🎯 RAID</span>
-                    </button>
                     <button id="archivedToggle" class="px-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg" title="Toggle archived">
                         <span id="archivedLabel">📦 <span id="archivedCount">0</span></span>
                     </button>
@@ -143,42 +134,7 @@
                 <div id="taskTable" class="flex-1 overflow-y-auto"></div>
 
                 <!-- Eisenhower Matrix View -->
-                <div id="matrixView" class="hidden flex-1 overflow-y-auto p-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
-                        <!-- Urgent & Important -->
-                        <div class="border-2 border-red-300 dark:border-red-700 rounded-lg p-4 bg-red-50/50 dark:bg-red-950/20">
-                            <h3 class="text-sm font-semibold mb-3 text-red-700 dark:text-red-300 flex items-center gap-2">
-                                <span>🔴</span> Urgent & Important
-                            </h3>
-                            <div id="matrix-urgent-important" class="space-y-2"></div>
-                        </div>
-
-                        <!-- Not Urgent & Important -->
-                        <div class="border-2 border-blue-300 dark:border-blue-700 rounded-lg p-4 bg-blue-50/50 dark:bg-blue-950/20">
-                            <h3 class="text-sm font-semibold mb-3 text-blue-700 dark:text-blue-300 flex items-center gap-2">
-                                <span>📅</span> Not Urgent & Important
-                            </h3>
-                            <div id="matrix-noturgent-important" class="space-y-2"></div>
-                        </div>
-
-                        <!-- Urgent & Not Important -->
-                        <div class="border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-4 bg-yellow-50/50 dark:bg-yellow-950/20">
-                            <h3 class="text-sm font-semibold mb-3 text-yellow-700 dark:text-yellow-300 flex items-center gap-2">
-                                <span>⚡</span> Urgent & Not Important
-                            </h3>
-                            <div id="matrix-urgent-notimportant" class="space-y-2"></div>
-                        </div>
-
-                        <!-- Not Urgent & Not Important -->
-                        <div class="border-2 border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50/50 dark:bg-gray-800/20">
-                            <h3 class="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                                <span>📝</span> Not Urgent & Not Important
-                            </h3>
-                            <div id="matrix-noturgent-notimportant" class="space-y-2"></div>
-                        </div>
-                    </div>
-                </div>
-
+                <!-- Matrix View Removed -->
                 <!-- RAID Log View -->
                 <div id="raidView" class="hidden flex-1 overflow-y-auto p-4">
                     <!-- Risk Matrix -->
@@ -1367,19 +1323,8 @@
 
             // Toggle between list, matrix, and RAID views
             const taskTable = document.getElementById('taskTable');
-            const matrixView = document.getElementById('matrixView');
-            const raidView = document.getElementById('raidView');
-
-            if (state.showRaidView) {
-                taskTable.classList.add('hidden');
-                matrixView.classList.add('hidden');
-                raidView.classList.remove('hidden');
-                renderRaidView();
-            } else if (state.showMatrixView) {
-                taskTable.classList.add('hidden');
-                matrixView.classList.remove('hidden');
-                raidView.classList.add('hidden');
-                renderMatrix();
+            
+            if (false) {
             } else {
                 taskTable.classList.remove('hidden');
                 matrixView.classList.add('hidden');
@@ -1971,77 +1916,7 @@
             table.appendChild(newRow);
         }
 
-        function renderMatrix() {
-            const tasks = getTasks().filter(t => t.status !== 'done' && !t.archived);
-            const now = new Date();
-
-            // Categorize tasks into quadrants
-            const quadrants = {
-                urgentImportant: [],
-                noturgentImportant: [],
-                urgentNotimportant: [],
-                noturgentNotimportant: []
-            };
-
-            tasks.forEach(task => {
-                // Determine if urgent (has due date within 3 days or overdue)
-                let isUrgent = false;
-                if (task.dueDate) {
-                    const due = new Date(task.dueDate);
-                    const daysUntilDue = (due - now) / (1000 * 60 * 60 * 24);
-                    isUrgent = daysUntilDue <= 3;
-                }
-
-                // Determine if important (high or medium priority)
-                const isImportant = task.priority === 'high' || task.priority === 'medium';
-
-                // Place in appropriate quadrant
-                if (isUrgent && isImportant) {
-                    quadrants.urgentImportant.push(task);
-                } else if (!isUrgent && isImportant) {
-                    quadrants.noturgentImportant.push(task);
-                } else if (isUrgent && !isImportant) {
-                    quadrants.urgentNotimportant.push(task);
-                } else {
-                    quadrants.noturgentNotimportant.push(task);
-                }
-            });
-
-            // Render each quadrant
-            const quadrantConfig = {
-                'matrix-urgent-important': { tasks: quadrants.urgentImportant, priority: 'high', dueDate: 'today' },
-                'matrix-noturgent-important': { tasks: quadrants.noturgentImportant, priority: 'high', dueDate: null },
-                'matrix-urgent-notimportant': { tasks: quadrants.urgentNotimportant, priority: 'low', dueDate: 'today' },
-                'matrix-noturgent-notimportant': { tasks: quadrants.noturgentNotimportant, priority: 'none', dueDate: null }
-            };
-
-            Object.entries(quadrantConfig).forEach(([id, config]) => {
-                const container = document.getElementById(id);
-                const taskHtml = config.tasks.map(task => {
-                    const priorityInfo = getPriorityDisplay(task.priority);
-                    return `
-                        <div class="p-2 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 hover:shadow-sm cursor-pointer text-sm" onclick="selectTaskById('${task.id}')">
-                            <div class="flex items-start gap-2">
-                                ${priorityInfo.icon}
-                                <div class="flex-1">
-                                    <div class="font-medium">${esc(task.content)}</div>
-                                    ${task.dueDate ? `<div class="text-xs text-gray-500 mt-1">📅 ${task.dueDate}</div>` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                const addButton = `
-                    <button onclick="addTaskToQuadrant('${config.priority}', '${config.dueDate}')" class="mt-2 w-full px-3 py-2 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded border border-dashed border-gray-300 dark:border-gray-600">
-                        + Add Task
-                    </button>
-                `;
-
-                container.innerHTML = (config.tasks.length === 0 ? '<p class="text-sm text-gray-400 italic mb-2">No tasks</p>' : taskHtml) + addButton;
-            });
-        }
-
+        
         function addTaskToQuadrant(priority, dueDate) {
             const content = prompt('Enter task description:');
             if (content && content.trim()) {
@@ -2103,40 +1978,7 @@
             });
         }
 
-        function renderRaidView() {
-            const allTasks = getProject()?.tasks || [];
-            const activeItems = allTasks.filter(t => !t.archived && t.status !== 'done');
-
-            // Categorize by type
-            const risks = activeItems.filter(t => t.type === 'risk');
-            const assumptions = activeItems.filter(t => t.type === 'assumption');
-            const issues = activeItems.filter(t => t.type === 'issue');
-            const dependencies = activeItems.filter(t => t.type === 'dependency');
-
-            // Render Risk Matrix
-            renderRiskMatrix(risks);
-
-            // Render Risks
-            document.getElementById('raid-risks').innerHTML = risks.length === 0
-                ? '<p class="text-sm text-gray-400 italic">No active risks</p>'
-                : risks.map(task => renderRaidCard(task, 'risk')).join('');
-
-            // Render Assumptions
-            document.getElementById('raid-assumptions').innerHTML = assumptions.length === 0
-                ? '<p class="text-sm text-gray-400 italic">No assumptions</p>'
-                : assumptions.map(task => renderRaidCard(task, 'assumption')).join('');
-
-            // Render Issues
-            document.getElementById('raid-issues').innerHTML = issues.length === 0
-                ? '<p class="text-sm text-gray-400 italic">No open issues</p>'
-                : issues.map(task => renderRaidCard(task, 'issue')).join('');
-
-            // Render Dependencies
-            document.getElementById('raid-dependencies').innerHTML = dependencies.length === 0
-                ? '<p class="text-sm text-gray-400 italic">No dependencies</p>'
-                : dependencies.map(task => renderRaidCard(task, 'dependency')).join('');
-        }
-
+        
         function renderRaidCard(task, type) {
             const getSeverityBadge = (level) => {
                 const badges = {
@@ -3117,45 +2959,9 @@ ${getRaidDetailsSection(task)}
             render();
         };
 
-        document.getElementById('matrixViewToggle').onclick = () => {
-            state.showMatrixView = !state.showMatrixView;
-            if (state.showMatrixView) state.showRaidView = false;
+        
 
-            const taskBtn = document.getElementById('taskViewToggle');
-            const matrixBtn = document.getElementById('matrixViewToggle');
-            const raidBtn = document.getElementById('raidViewToggle');
-
-            if (state.showMatrixView) {
-                taskBtn.classList.remove('bg-blue-100', 'dark:bg-blue-950');
-                matrixBtn.classList.add('bg-blue-100', 'dark:bg-blue-950');
-                raidBtn.classList.remove('bg-blue-100', 'dark:bg-blue-950');
-            } else {
-                taskBtn.classList.add('bg-blue-100', 'dark:bg-blue-950');
-                matrixBtn.classList.remove('bg-blue-100', 'dark:bg-blue-950');
-            }
-
-            render();
-        };
-
-        document.getElementById('raidViewToggle').onclick = () => {
-            state.showRaidView = !state.showRaidView;
-            if (state.showRaidView) state.showMatrixView = false;
-
-            const taskBtn = document.getElementById('taskViewToggle');
-            const matrixBtn = document.getElementById('matrixViewToggle');
-            const raidBtn = document.getElementById('raidViewToggle');
-
-            if (state.showRaidView) {
-                taskBtn.classList.remove('bg-blue-100', 'dark:bg-blue-950');
-                matrixBtn.classList.remove('bg-blue-100', 'dark:bg-blue-950');
-                raidBtn.classList.add('bg-blue-100', 'dark:bg-blue-950');
-            } else {
-                taskBtn.classList.add('bg-blue-100', 'dark:bg-blue-950');
-                raidBtn.classList.remove('bg-blue-100', 'dark:bg-blue-950');
-            }
-
-            render();
-        };
+        
 
         document.getElementById('archivedToggle').onclick = () => {
             state.showArchived = !state.showArchived;
