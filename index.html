@@ -651,23 +651,25 @@
         // Heroicons SVG helper
         const getIcon = (name, size = '20') => {
             const icons = {
-                checkCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
-                circle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="12" r="9"/></svg>`,
-                pause: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`,
-                user: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 7a4 4 0 100-8 4 4 0 000 8z"/></svg>`,
-                pin: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M15.75 5.7l-7.46 7.46a2 2 0 010 2.83l.83.83a2 2 0 002.83 0l7.46-7.46m0-2.83a2 2 0 00-2.83 0l-.83.83m0 0l-2.83 2.83m2.83-2.83a2 2 0 110-2.83 2 2 0 010 2.83zm-7.46 7.46a2 2 0 110 2.83 2 2 0 010-2.83z"/></svg>`,
-                calendar: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
-                userProfile: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z"/></svg>`
+                // Status icons
+                plusCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+                minusCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M9 12h6m6 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+                arrowRightCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+                arrowLeftCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M11 15l-3-3m0 0l3-3m-3 3h13m0 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+                stopCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M9 9h6v6H9V9z" fill="currentColor" opacity="0.3"/><circle cx="12" cy="12" r="9"/></svg>`,
+                ellipsisHorizontalCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M8 12a1 1 0 11-2 0 1 1 0 012 0zm5 0a1 1 0 11-2 0 1 1 0 012 0zm5 0a1 1 0 11-2 0 1 1 0 012 0z" fill="currentColor"/><circle cx="12" cy="12" r="9"/></svg>`,
+                userCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M17.982 18.725A7.488 7.488 0 0012.5 15a7.488 7.488 0 00-5.482 3.725m11.964 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275m11.963 0A7.488 7.488 0 0023 12a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0zm-6-6.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/></svg>`,
+                calendarDays: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M6 4h12v16H6V4zm2 5h2v2H8V9zm4 0h2v2h-2V9zm4 0h2v2h-2V9zm-8 4h2v2H8v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zM7 2v2M17 2v2M3 10h18"/></svg>`
             };
             return icons[name] || '';
         };
 
         const STATUS_INFO = {
-            active: { label: '●', desc: 'Current task', svg: 'circle' },
-            waiting: { label: '⏸', desc: 'Blocked', svg: 'pause' },
-            delegated: { label: '👤', desc: 'Delegated', svg: 'userProfile' },
-            reference: { label: '📌', desc: 'Reference', svg: 'pin' },
-            done: { label: '✓', desc: 'Done', svg: 'checkCircle' }
+            active: { label: '−', desc: 'Current task', svg: 'minusCircle' },
+            waiting: { label: '⏸', desc: 'Blocked', svg: 'ellipsisHorizontalCircle' },
+            delegated: { label: '<', desc: 'Delegated', svg: 'arrowLeftCircle' },
+            reference: { label: '◆', desc: 'Reference', svg: 'stopCircle' },
+            done: { label: '+', desc: 'Done', svg: 'plusCircle' }
         };
         const STATUS_ORDER = ['active', 'waiting', 'delegated', 'reference', 'done'];
 
@@ -782,7 +784,7 @@
             if (task.dueDate) {
                 const dueEl = document.createElement('span');
                 dueEl.className = 'task-due';
-                dueEl.innerHTML = `${getIcon('calendar')}<span>${task.dueDate}</span>`;
+                dueEl.innerHTML = `${getIcon('calendarDays')}<span>${task.dueDate}</span>`;
                 let tapCount = 0;
                 let tapTimeout;
                 dueEl.addEventListener('pointerup', (e) => {
@@ -810,7 +812,7 @@
             if (task.delegatedTo) {
                 const delegatedEl = document.createElement('span');
                 delegatedEl.className = 'task-delegated';
-                delegatedEl.innerHTML = `${getIcon('userProfile')}<span>${task.delegatedTo}</span>`;
+                delegatedEl.innerHTML = `${getIcon('userCircle')}<span>${task.delegatedTo}</span>`;
                 let tapCount = 0;
                 let tapTimeout;
                 delegatedEl.addEventListener('pointerup', (e) => {
