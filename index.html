@@ -103,17 +103,18 @@
         /* Input */
         #newTaskInput {
             width: 100%;
-            padding: 16px;
-            font-size: 16px;
-            border: 2px solid #000000;
+            padding: 12px 16px;
+            font-size: 15px;
+            border: none;
+            border-bottom: 1px solid #000000;
             background: #ffffff;
             color: #000000;
             font-family: inherit;
-            margin-bottom: 40px;
+            margin-bottom: 0;
         }
 
         body.dark #newTaskInput {
-            border-color: #ffffff;
+            border-bottom-color: #ffffff;
             background: #000000;
             color: #ffffff;
         }
@@ -146,10 +147,6 @@
             border: 1px solid #000000;
             border-top: none;
             background: #ffffff;
-        }
-
-        .task-row:first-child {
-            border-top: 2px solid #000000;
         }
 
         body.dark .task-row {
@@ -444,14 +441,15 @@
             </div>
         </div>
 
-        <input
-            id="newTaskInput"
-            type="text"
-            placeholder="Add task..."
-            autocomplete="off"
-        />
-
-        <div id="taskList"></div>
+        <div style="border: 2px solid #000000; margin-bottom: 40px;">
+            <input
+                id="newTaskInput"
+                type="text"
+                placeholder="Add task..."
+                autocomplete="off"
+            />
+            <div id="taskList"></div>
+        </div>
         <div id="archivedList" style="display: none;">
             <h2>Archived</h2>
             <div id="archivedTaskList"></div>
