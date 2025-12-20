@@ -490,15 +490,17 @@
 
         /* Keyboard Help */
         .keyboard-help {
-            font-size: 10px;
-            line-height: 1.2;
+            font-size: 13px;
+            line-height: 1.3;
             padding: 0;
             background: transparent;
             border: none;
-            font-family: monospace;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             opacity: 1;
             flex: 1;
             min-width: 0;
+            display: flex;
+            gap: 24px;
         }
 
         body.dark .keyboard-help {
@@ -512,9 +514,10 @@
         }
 
         .keyboard-help-section {
-            margin-bottom: 6px;
-            display: inline-block;
-            margin-right: 16px;
+            margin-bottom: 0;
+            display: flex;
+            gap: 12px;
+            align-items: center;
         }
 
         .keyboard-help-section:last-child {
@@ -528,10 +531,11 @@
             letter-spacing: 0.5px;
             border-bottom: none;
             padding-bottom: 0;
-            margin-bottom: 2px;
-            font-size: 9px;
+            margin-bottom: 0;
+            font-size: 11px;
             display: inline;
-            margin-right: 6px;
+            margin-right: 0;
+            opacity: 0.7;
         }
 
         body.dark .keyboard-help-title {
@@ -541,18 +545,21 @@
         .keyboard-help-item {
             display: inline-flex;
             justify-content: space-between;
-            gap: 4px;
+            gap: 6px;
             margin-bottom: 0;
             margin-right: 8px;
+            align-items: center;
         }
 
         .keyboard-help-key {
             font-weight: 700;
             min-width: auto;
+            font-size: 14px;
         }
 
         .keyboard-help-desc {
             opacity: 0.85;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -562,23 +569,23 @@
             <div class="keyboard-help" id="keyboardHelp">
                 <div class="keyboard-help-section">
                     <div class="keyboard-help-title">Nav</div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">n</span><span class="keyboard-help-desc">add</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">↓/↑</span><span class="keyboard-help-desc">move</span></div>
+                    <div class="keyboard-help-item"><span class="keyboard-help-key">n</span><span class="keyboard-help-desc">New</span></div>
+                    <div class="keyboard-help-item"><span class="keyboard-help-key">↕</span><span class="keyboard-help-desc">Move</span></div>
                 </div>
                 <div class="keyboard-help-section">
                     <div class="keyboard-help-title">Status</div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">-</span><span class="keyboard-help-desc">act</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">+</span><span class="keyboard-help-desc">done</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">→</span><span class="keyboard-help-desc">wait</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">←</span><span class="keyboard-help-desc">deleg</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">r</span><span class="keyboard-help-desc">ref</span></div>
+                    <div class="keyboard-help-item"><span class="keyboard-help-key">-</span><span class="keyboard-help-desc">Active</span></div>
+                    <div class="keyboard-help-item"><span class="keyboard-help-key">+</span><span class="keyboard-help-desc">Done</span></div>
+                    <div class="keyboard-help-item"><span class="keyboard-help-key">→</span><span class="keyboard-help-desc">Wait</span></div>
+                    <div class="keyboard-help-item"><span class="keyboard-help-key">←</span><span class="keyboard-help-desc">Deleg</span></div>
+                    <div class="keyboard-help-item"><span class="keyboard-help-key">r</span><span class="keyboard-help-desc">Ref</span></div>
                 </div>
                 <div class="keyboard-help-section">
                     <div class="keyboard-help-title">Edit</div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">e</span><span class="keyboard-help-desc">text</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">t</span><span class="keyboard-help-desc">due</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">@</span><span class="keyboard-help-desc">assign</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">a</span><span class="keyboard-help-desc">arch</span></div>
+                    <div class="keyboard-help-item"><span class="keyboard-help-key">e</span><span class="keyboard-help-desc">Text</span></div>
+                    <div class="keyboard-help-item"><span class="keyboard-help-key">t</span><span class="keyboard-help-desc">Due</span></div>
+                    <div class="keyboard-help-item"><span class="keyboard-help-key">@</span><span class="keyboard-help-desc">Assign</span></div>
+                    <div class="keyboard-help-item"><span class="keyboard-help-key">a</span><span class="keyboard-help-desc">Archive</span></div>
                 </div>
             </div>
             <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">◐</button>
