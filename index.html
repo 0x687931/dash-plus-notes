@@ -2,9 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Dash-Plus">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Dash-Plus Notes</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23000' width='192' height='192'/><text x='50%' y='50%' font-size='120' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='%23fff'>−</text></svg>">
     <style>
+        /* ========== BASIC SETTINGS ========== */
         * {
             margin: 0;
             padding: 0;
@@ -18,6 +26,10 @@
             line-height: 1.5;
             background: #ffffff;
             color: #000000;
+            overflow: auto;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         body.dark {
@@ -25,74 +37,153 @@
             color: #ffffff;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        body *:focus {
+            outline: none;
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 20px 12px;
-            }
+        /* ========== PAGE STRUCTURE ========== */
+        .page {
+            display: none;
+            padding: 0;
+            margin: 0;
         }
 
-        /* Header */
+        .page.active {
+            display: block;
+        }
+
+        /* ========== HEADER ========== */
         header {
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            padding: 12px 16px;
-            margin-bottom: 0;
-            gap: 0;
-            border: 1px solid #000000;
-            background: #ffffff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
             min-height: 44px;
+            padding: 12px 16px;
+            background: #ffffff;
+            border: 1px solid #000000;
+            border-bottom: 2px solid #000000;
+            z-index: 100;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0;
+            align-items: center;
         }
 
         body.dark header {
-            border-color: #ffffff;
             background: #000000;
+            border-color: #ffffff;
         }
 
         h1 {
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
             display: none;
         }
 
-        .theme-toggle {
-            width: 40px;
-            height: 40px;
-            border: 2px solid #000000;
+        /* ========== KEYBOARD HELP ========== */
+        .keyboard-help {
+            display: flex;
+            gap: 16px;
+            flex: 1;
+            min-width: 0;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .keyboard-help-section {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding-right: 16px;
+            border-right: 1px solid #000000;
+        }
+
+        body.dark .keyboard-help-section {
+            border-right-color: #ffffff;
+        }
+
+        .keyboard-help-section:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+
+        .keyboard-help-title {
+            display: none;
+        }
+
+        .keyboard-help-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+            text-align: center;
+            border: none;
             background: transparent;
             cursor: pointer;
+            padding: 0;
+            font-family: inherit;
+        }
+
+        .keyboard-help-item:hover .keyboard-help-key {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        body.dark .keyboard-help-item:hover .keyboard-help-key {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .keyboard-help-key {
+            width: 44px;
+            height: 44px;
+            border: 2px solid #000000;
+            background: transparent;
+            font-weight: 700;
             font-size: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
+            touch-action: manipulation;
         }
 
-        body.dark .theme-toggle {
+        body.dark .keyboard-help-key {
             border-color: #ffffff;
         }
 
-        .theme-divider {
-            border-left: 1px solid #000000;
-            padding-left: 16px;
+        .keyboard-help-desc {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            max-width: 44px;
         }
 
-        body.dark .theme-divider {
-            border-left-color: #ffffff;
+        /* ========== CONTENT AREA ========== */
+        .content {
+            padding: 0;
+            margin: 0;
+            position: absolute;
+            top: 56px;
+            left: 0;
+            width: 100%;
+            color: #000000;
+            z-index: 10;
+            min-height: calc(100vh - 56px);
         }
 
-        /* View Tabs */
+        body.dark .content {
+            color: #ffffff;
+        }
+
+        /* ========== VIEW TABS ========== */
         .view-tabs {
             display: flex;
             gap: 0;
             margin-bottom: 20px;
             border: 2px solid #000000;
+            margin-top: 20px;
         }
 
         body.dark .view-tabs {
@@ -112,6 +203,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-family: inherit;
+            touch-action: manipulation;
         }
 
         .view-tab:last-child {
@@ -140,17 +232,64 @@
             margin-left: 4px;
         }
 
-        /* Input */
+        /* ========== TASK LIST CONTAINER ========== */
+        .task-container {
+            border: 1px solid #000000;
+            margin: 0 20px 40px 20px;
+        }
+
+        body.dark .task-container {
+            border-color: #ffffff;
+        }
+
+        #newTaskWrapper {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            border-bottom: 1px solid #000000;
+            height: 56px;
+            margin-bottom: -1px;
+        }
+
+        body.dark #newTaskWrapper {
+            border-bottom-color: #ffffff;
+        }
+
+        #newTaskWrapper button {
+            width: 44px;
+            height: 44px;
+            border: 1px solid #000000;
+            background: #ffffff;
+            cursor: default;
+            font-weight: 700;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            touch-action: manipulation;
+        }
+
+        body.dark #newTaskWrapper button {
+            border-color: #ffffff;
+            background: #000000;
+            color: #ffffff;
+        }
+
         #newTaskInput {
+            flex: 1;
+            border: none;
+            background: transparent;
             font-size: 15px;
-            color: #000000;
             font-family: inherit;
-            line-height: 1.5;
+            padding: 0;
+            height: 44px;
+            color: #000000;
         }
 
         body.dark #newTaskInput {
             color: #ffffff;
-            background: #000000;
         }
 
         #newTaskInput::placeholder {
@@ -161,13 +300,7 @@
             outline: none;
         }
 
-        /* Task List */
-        #taskList, #archivedTaskList {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-        }
-
+        /* ========== TASK ROWS ========== */
         .task-row {
             display: flex;
             align-items: center;
@@ -178,6 +311,7 @@
             line-height: 1.5;
             height: 56px;
             margin-top: -1px;
+            touch-action: manipulation;
         }
 
         body.dark .task-row {
@@ -220,29 +354,16 @@
             border-color: #ffaa33;
         }
 
-        #newTaskInput.selected {
-            background: #ffff00;
-        }
-
-        body.dark #newTaskInput.selected {
-            background: #ffff00;
-            color: #000000;
-        }
-
         #newTaskWrapper.selected {
             background: #ffff00;
         }
 
         body.dark #newTaskWrapper.selected {
             background: #ffff00;
+            color: #000000;
         }
 
-        /* Status Selector */
-        .status-selector {
-            position: relative;
-            flex-shrink: 0;
-        }
-
+        /* ========== STATUS BUTTON ========== */
         .status-button {
             padding: 0;
             border: 1px solid #000000;
@@ -259,6 +380,8 @@
             align-items: center;
             justify-content: center;
             font-family: 'Courier New', monospace;
+            flex-shrink: 0;
+            touch-action: manipulation;
         }
 
         body.dark .status-button {
@@ -275,67 +398,7 @@
             background: #1a1a1a;
         }
 
-        .status-dropdown {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 100%;
-            flex-direction: column;
-            background: #ffffff;
-            border: 1px solid #000000;
-            border-left: none;
-            margin-left: -1px;
-            z-index: 10;
-            box-shadow: 4px 0 16px rgba(0, 0, 0, 0.2);
-        }
-
-        body.dark .status-dropdown {
-            background: #000000;
-            border-color: #ffffff;
-            box-shadow: 4px 0 16px rgba(255, 255, 255, 0.1);
-        }
-
-        .status-dropdown.open {
-            display: flex;
-        }
-
-        .status-option {
-            padding: 12px 16px;
-            border-right: 1px solid #000000;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            white-space: nowrap;
-        }
-
-        .status-option:last-child {
-            border-right: none;
-        }
-
-        body.dark .status-option {
-            border-right-color: #ffffff;
-        }
-
-        .status-option:hover {
-            background: #f0f0f0;
-        }
-
-        body.dark .status-option:hover {
-            background: #1a1a1a;
-        }
-
-        .status-option-title {
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .status-option-desc {
-            font-size: 12px;
-            opacity: 0.6;
-        }
-
-        /* Task Content */
+        /* ========== TASK CONTENT ========== */
         .task-content {
             flex: 1;
             min-width: 0;
@@ -360,24 +423,7 @@
             color: #ffffff;
         }
 
-        .task-delegated input {
-            padding: 2px 4px;
-            border: 1px solid #000000;
-            background: #ffffff;
-            color: #000000;
-            font-family: inherit;
-            font-size: 15px;
-            min-width: 100px;
-            touch-action: manipulation;
-        }
-
-        body.dark .task-delegated input {
-            border-color: #ffffff;
-            background: #1a1a1a;
-            color: #ffffff;
-        }
-
-        /* Task Metadata */
+        /* ========== TASK METADATA ========== */
         .task-meta {
             display: flex;
             gap: 12px;
@@ -410,7 +456,24 @@
             border-bottom-color: #ffffff;
         }
 
-        /* Archive Button */
+        .task-delegated input {
+            padding: 2px 4px;
+            border: 1px solid #000000;
+            background: #ffffff;
+            color: #000000;
+            font-family: inherit;
+            font-size: 15px;
+            min-width: 100px;
+            touch-action: manipulation;
+        }
+
+        body.dark .task-delegated input {
+            border-color: #ffffff;
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+
+        /* ========== ARCHIVE BUTTON ========== */
         .archive-btn {
             padding: 6px 10px;
             border: 1px solid #000000;
@@ -447,19 +510,7 @@
             color: #000000;
         }
 
-        /* Archived Section */
-        #archivedList {
-            margin-top: 0;
-            padding-top: 0;
-            border-top: none;
-        }
-
-        #archivedList h2 {
-            display: none;
-            letter-spacing: 0.5px;
-        }
-
-        /* Date Picker Modal */
+        /* ========== DATE PICKER MODAL ========== */
         .date-picker-modal {
             display: none;
             position: fixed;
@@ -468,7 +519,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 100;
+            z-index: 200;
             justify-content: center;
             align-items: center;
         }
@@ -517,19 +568,22 @@
 
         .date-picker-buttons {
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            justify-content: center;
         }
 
         .date-picker-btn {
-            flex: 1;
-            padding: 10px;
+            padding: 10px 20px;
             border: 1px solid #000000;
             background: #ffffff;
             color: #000000;
             cursor: pointer;
             font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             font-family: inherit;
-            font-size: 14px;
+            touch-action: manipulation;
         }
 
         body.dark .date-picker-btn {
@@ -548,93 +602,15 @@
             color: #000000;
         }
 
-        /* Keyboard Help */
-        .keyboard-help {
-            display: flex;
-            gap: 16px;
-            flex: 1;
-            min-width: 0;
-            align-items: center;
-        }
-
-        body.dark .keyboard-help {
-            color: #ffffff;
-        }
-
-        .keyboard-help-section {
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            padding-right: 16px;
-            border-right: 1px solid #000000;
-        }
-
-        body.dark .keyboard-help-section {
-            border-right-color: #ffffff;
-        }
-
-        .keyboard-help-section:last-child {
-            margin-bottom: 0;
-            border-right: none;
-            padding-right: 0;
-        }
-
-        .keyboard-help-title {
-            display: none;
-        }
-
-        .keyboard-help-item {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            align-items: center;
-            text-align: center;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            padding: 0;
-            font-family: inherit;
-        }
-
-        .keyboard-help-item:hover .keyboard-help-key {
-            background: #000000;
-            color: #ffffff;
-        }
-
-        body.dark .keyboard-help-item:hover .keyboard-help-key {
-            background: #ffffff;
-            color: #000000;
-        }
-
-        .keyboard-help-key {
-            width: 44px;
-            height: 44px;
-            border: 2px solid #000000;
-            background: transparent;
-            font-weight: 700;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        body.dark .keyboard-help-key {
-            border-color: #ffffff;
-        }
-
-        .keyboard-help-desc {
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            line-height: 1.2;
-            max-width: 44px;
-        }
-
-        /* Mobile responsive */
+        /* ========== RESPONSIVE DESIGN ========== */
         @media (max-width: 768px) {
-            .keyboard-help {
+            header {
                 flex-wrap: wrap;
+                padding: 8px 12px;
+                min-height: 40px;
+            }
+
+            .keyboard-help {
                 gap: 8px;
             }
 
@@ -664,15 +640,12 @@
 
             .keyboard-help {
                 gap: 4px;
+                flex-wrap: wrap;
             }
 
             .keyboard-help-section {
                 gap: 4px;
                 padding-right: 4px;
-            }
-
-            .keyboard-help-title {
-                display: none;
             }
 
             .keyboard-help-key {
@@ -687,7 +660,14 @@
                 max-width: 32px;
             }
 
-            /* Mobile task layout improvements */
+            .content {
+                top: 56px;
+            }
+
+            .task-container {
+                margin: 0 12px 20px 12px;
+            }
+
             .task-row {
                 gap: 12px;
                 padding: 12px 16px;
@@ -712,7 +692,6 @@
                 gap: 8px;
                 font-size: 13px;
                 flex: 0 1 auto;
-                order: 3;
                 width: 100%;
                 justify-content: flex-start;
             }
@@ -729,7 +708,6 @@
             .archive-btn {
                 padding: 8px 12px;
                 font-size: 10px;
-                order: 4;
                 width: 100%;
                 justify-content: center;
                 margin-top: 8px;
@@ -748,13 +726,10 @@
                 font-size: 20px !important;
             }
 
-            #newTaskInput {
-                font-size: 15px !important;
-            }
-
-            /* View tabs on mobile */
             .view-tabs {
                 margin-bottom: 16px !important;
+                margin-left: 12px;
+                margin-right: 12px;
             }
 
             .view-tab {
@@ -766,7 +741,6 @@
                 justify-content: center !important;
             }
 
-            /* Date picker on mobile */
             .date-picker-box {
                 min-width: 90% !important;
                 max-width: 95vw !important;
@@ -793,12 +767,14 @@
                 min-height: 44px !important;
                 padding: 10px !important;
                 font-size: 14px !important;
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- ACTIVE TASKS PAGE -->
+    <div class="page active" id="active">
         <header>
             <div class="keyboard-help" id="keyboardHelp">
                 <div class="keyboard-help-section">
@@ -821,40 +797,85 @@
                     <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'delegated'; editField(selectedIdx, 'delegatedTo'); }"><span class="keyboard-help-key">@</span><span class="keyboard-help-desc">Assign</span></button>
                 </div>
                 <div class="keyboard-help-section">
-                    <button class="keyboard-help-item" onclick="const archivedTab = document.querySelector('[data-view=\\\"archived\\\"]'); if(archivedTab) archivedTab.click();"><span class="keyboard-help-key">u</span><span class="keyboard-help-desc">(UN)</span></button>
+                    <button class="keyboard-help-item" onclick="switchPage('archived')"><span class="keyboard-help-key">u</span><span class="keyboard-help-desc">(UN)</span></button>
                     <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { toggleArchive(selectedIdx); render(); setSelectedTask(null); }"><span class="keyboard-help-key">a</span><span class="keyboard-help-desc">ARCHI</span></button>
                 </div>
             </div>
         </header>
 
-        <div class="view-tabs">
-            <button class="view-tab active" onclick="switchView('active')" data-view="active">
-                ACTIVE <span class="tab-count" id="activeCountTab">0</span>
-            </button>
-            <button class="view-tab" onclick="switchView('archived')" data-view="archived">
-                ARCHIVED <span class="tab-count" id="archivedCountTab">0</span>
-            </button>
-        </div>
-
-        <div style="border: 1px solid #000000; margin-bottom: 40px;">
-            <div id="newTaskWrapper" style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-bottom: 1px solid #000000; height: 56px; margin-bottom: -1px;">
-                <button style="width: 44px; height: 44px; border: 1px solid #000000; background: #ffffff; cursor: default; font-weight: 700; font-size: 24px; display: flex; align-items: center; justify-content: center; font-family: 'Courier New', monospace;">-</button>
-                <input
-                    id="newTaskInput"
-                    type="text"
-                    placeholder="Add task..."
-                    autocomplete="off"
-                    style="flex: 1; border: none; background: transparent; font-size: 15px; font-family: inherit; padding: 0; height: 44px;"
-                />
+        <div class="content">
+            <div class="view-tabs">
+                <button class="view-tab active" onclick="switchPage('active')" data-view="active">
+                    ACTIVE <span class="tab-count" id="activeCountTab">0</span>
+                </button>
+                <button class="view-tab" onclick="switchPage('archived')" data-view="archived">
+                    ARCHIVED <span class="tab-count" id="archivedCountTab">0</span>
+                </button>
             </div>
-            <div id="taskList"></div>
-        </div>
-        <div id="archivedList" style="display: none;">
-            <h2>Archived</h2>
-            <div id="archivedTaskList"></div>
+
+            <div class="task-container">
+                <div id="newTaskWrapper" style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-bottom: 1px solid #000000; height: 56px; margin-bottom: -1px;">
+                    <button style="width: 44px; height: 44px; border: 1px solid #000000; background: #ffffff; cursor: default; font-weight: 700; font-size: 24px; display: flex; align-items: center; justify-content: center; font-family: 'Courier New', monospace;">−</button>
+                    <input
+                        id="newTaskInput"
+                        type="text"
+                        placeholder="Add task..."
+                        autocomplete="off"
+                        style="flex: 1; border: none; background: transparent; font-size: 15px; font-family: inherit; padding: 0; height: 44px;"
+                    />
+                </div>
+                <div id="taskList"></div>
+            </div>
         </div>
     </div>
 
+    <!-- ARCHIVED TASKS PAGE -->
+    <div class="page" id="archived">
+        <header>
+            <div class="keyboard-help" id="keyboardHelpArchived">
+                <div class="keyboard-help-section">
+                    <div class="keyboard-help-title">Nav</div>
+                    <button class="keyboard-help-item" onclick="document.getElementById('newTaskInput').focus(); setInputSelected();"><span class="keyboard-help-key">n</span><span class="keyboard-help-desc">New</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { const viewTasks = currentView === 'archived' ? tasks.filter(t => t.archived) : tasks.filter(t => !t.archived); const currentPos = viewTasks.indexOf(tasks[selectedIdx]); if(currentPos > 0) { setSelectedTask(tasks.indexOf(viewTasks[currentPos - 1])); } else { setInputSelected(); } }"><span class="keyboard-help-key">^</span><span class="keyboard-help-desc">Up</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { const viewTasks = currentView === 'archived' ? tasks.filter(t => t.archived) : tasks.filter(t => !t.archived); const currentPos = viewTasks.indexOf(tasks[selectedIdx]); if(currentPos < viewTasks.length - 1) { setSelectedTask(tasks.indexOf(viewTasks[currentPos + 1])); } } else if(selectedIsInput) { const viewTasks = currentView === 'archived' ? tasks.filter(t => t.archived) : tasks.filter(t => !t.archived); if(viewTasks.length > 0) { setSelectedTask(tasks.indexOf(viewTasks[0])); } }"><span class="keyboard-help-key">v</span><span class="keyboard-help-desc">Down</span></button>
+                </div>
+                <div class="keyboard-help-section">
+                    <div class="keyboard-help-title">Status</div>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'done'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">d</span><span class="keyboard-help-desc">Done</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'waiting'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">></span><span class="keyboard-help-desc">Wait</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'delegated'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">&lt;</span><span class="keyboard-help-desc">Deleg</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'reference'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">r</span><span class="keyboard-help-desc">Ref</span></button>
+                </div>
+                <div class="keyboard-help-section">
+                    <div class="keyboard-help-title">Edit</div>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) startEdit(selectedIdx)"><span class="keyboard-help-key">e</span><span class="keyboard-help-desc">Edit</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) editField(selectedIdx, 'dueDate')"><span class="keyboard-help-key">t</span><span class="keyboard-help-desc">Due</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'delegated'; editField(selectedIdx, 'delegatedTo'); }"><span class="keyboard-help-key">@</span><span class="keyboard-help-desc">Assign</span></button>
+                </div>
+                <div class="keyboard-help-section">
+                    <button class="keyboard-help-item" onclick="switchPage('active')"><span class="keyboard-help-key">u</span><span class="keyboard-help-desc">(UN)</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { toggleArchive(selectedIdx); render(); setSelectedTask(null); }"><span class="keyboard-help-key">a</span><span class="keyboard-help-desc">ARCHI</span></button>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="view-tabs">
+                <button class="view-tab" onclick="switchPage('active')" data-view="active">
+                    ACTIVE <span class="tab-count" id="activeCountTab2">0</span>
+                </button>
+                <button class="view-tab active" onclick="switchPage('archived')" data-view="archived">
+                    ARCHIVED <span class="tab-count" id="archivedCountTab2">0</span>
+                </button>
+            </div>
+
+            <div class="task-container">
+                <div id="archivedTaskList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DATE PICKER MODAL -->
     <div class="date-picker-modal" id="datePickerModal">
         <div class="date-picker-box">
             <h3>Set Due Date</h3>
@@ -867,10 +888,29 @@
     </div>
 
     <script>
-        // State management
+        "use strict";
+
+        // ========== PAGE NAVIGATION ==========
+        function switchPage(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show selected page
+            const page = document.getElementById(pageName);
+            if (page) {
+                page.classList.add('active');
+                currentView = pageName;
+                render();
+                updateStats();
+            }
+        }
+
+        // ========== STATE MANAGEMENT ==========
         const STORAGE_KEY = 'dashplus-tasks';
         const STATUS_INFO = {
-            active: { label: '-', desc: 'Current task to do' },
+            active: { label: '−', desc: 'Current task to do' },
             waiting: { label: '>', desc: 'Blocked by external factor' },
             delegated: { label: '<', desc: 'Assigned to someone else' },
             reference: { label: 'r', desc: 'Data point, not actionable' },
@@ -879,25 +919,25 @@
         const STATUS_ORDER = ['active', 'waiting', 'delegated', 'reference', 'done'];
 
         let tasks = [];
-        let currentView = 'active'; // 'active' or 'archived'
+        let currentView = 'active';
         let datePickerTaskIdx = null;
+        let selectedIdx = null;
+        let selectedIsInput = false;
 
-        // Load from localStorage
+        // ========== STORAGE ==========
         function load() {
             const stored = localStorage.getItem(STORAGE_KEY);
             tasks = stored ? JSON.parse(stored) : [];
         }
 
-        // Save to localStorage
         function save() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
         }
 
-        // Render all tasks
+        // ========== RENDERING ==========
         function render() {
             const listEl = document.getElementById('taskList');
             const archivedListEl = document.getElementById('archivedTaskList');
-            const archivedContainerEl = document.getElementById('archivedList');
 
             listEl.innerHTML = '';
             archivedListEl.innerHTML = '';
@@ -905,109 +945,61 @@
             const activeTasks = tasks.filter(t => !t.archived);
             const archivedTasks = tasks.filter(t => t.archived);
 
-            // Render based on current view
-            if (currentView === 'active') {
-                if (activeTasks.length === 0) {
-                    const emptyEl = document.createElement('div');
-                    emptyEl.style.padding = '12px 16px';
-                    emptyEl.style.color = '#999';
-                    emptyEl.textContent = 'Hit "n" to create a new task';
-                    listEl.appendChild(emptyEl);
-                } else {
-                    activeTasks.forEach((task) => {
-                        const idx = tasks.indexOf(task);
-                        const taskRow = createTaskElement(task, idx);
-                        listEl.appendChild(taskRow);
-                    });
-                }
-                archivedContainerEl.style.display = 'none';
-            } else {
-                if (archivedTasks.length === 0) {
-                    const emptyEl = document.createElement('div');
-                    emptyEl.style.padding = '12px 16px';
-                    emptyEl.style.color = '#999';
-                    emptyEl.textContent = 'No archived tasks';
-                    archivedListEl.appendChild(emptyEl);
-                } else {
-                    archivedTasks.forEach((task) => {
-                        const idx = tasks.indexOf(task);
-                        const taskRow = createTaskElement(task, idx, true);
-                        archivedListEl.appendChild(taskRow);
-                    });
-                }
-                archivedContainerEl.style.display = archivedTasks.length > 0 ? 'block' : 'none';
-            }
+            activeTasks.forEach(task => {
+                const idx = tasks.indexOf(task);
+                listEl.appendChild(createTaskElement(task, idx, false));
+            });
+
+            archivedTasks.forEach(task => {
+                const idx = tasks.indexOf(task);
+                archivedListEl.appendChild(createTaskElement(task, idx, true));
+            });
 
             updateStats();
         }
 
-        // Create status selector
-        function createStatusSelector(idx, isArchived) {
-            const container = document.createElement('div');
-            container.className = 'status-selector';
-
-            const button = document.createElement('button');
-            button.className = 'status-button';
-            button.textContent = STATUS_INFO[tasks[idx].status].label;
-            button.type = 'button';
-
-            if (!isArchived) {
-                button.onclick = (e) => {
-                    e.stopPropagation();
-                    const currentStatus = tasks[idx].status;
-                    const currentIdx = STATUS_ORDER.indexOf(currentStatus);
-                    const nextIdx = (currentIdx + 1) % STATUS_ORDER.length;
-                    tasks[idx].status = STATUS_ORDER[nextIdx];
-                    save();
-                    render();
-                };
-            } else {
-                button.disabled = true;
-                button.style.opacity = '0.5';
-            }
-
-            container.appendChild(button);
-            return container;
-        }
-
-        // Helper function to check due date status
         function getDueDateClass(dueDate) {
             if (!dueDate) return '';
-
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-
             const due = new Date(dueDate);
             due.setHours(0, 0, 0, 0);
-
             const diffTime = due - today;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
             if (diffDays < 0 || diffDays === 0) {
-                return 'due-today'; // Overdue or today
+                return 'due-today';
             } else if (diffDays <= 3) {
-                return 'due-soon'; // Within 3 days
+                return 'due-soon';
             }
             return '';
         }
 
-        // Create task row element
         function createTaskElement(task, idx, isArchived = false) {
             const taskRow = document.createElement('div');
             const dueClass = getDueDateClass(task.dueDate);
             taskRow.className = `task-row ${task.status === 'done' ? 'done' : ''} ${dueClass}`.trim();
             taskRow.dataset.idx = idx;
 
-            // Status selector
-            const statusContainer = createStatusSelector(idx, isArchived);
-            taskRow.appendChild(statusContainer);
+            // Status button
+            const statusBtn = document.createElement('button');
+            statusBtn.className = 'status-button';
+            statusBtn.textContent = STATUS_INFO[task.status].label;
+            statusBtn.onclick = (e) => {
+                e.stopPropagation();
+                const idx = parseInt(e.target.closest('[data-idx]').dataset.idx);
+                const currentStatusIndex = STATUS_ORDER.indexOf(tasks[idx].status);
+                tasks[idx].status = STATUS_ORDER[(currentStatusIndex + 1) % STATUS_ORDER.length];
+                save();
+                render();
+                setSelectedTask(idx);
+            };
+            taskRow.appendChild(statusBtn);
 
             // Content
             const contentEl = document.createElement('span');
             contentEl.className = 'task-content';
             contentEl.textContent = task.content;
             if (!isArchived) {
-                // Mobile-friendly: single tap on touch, double-click on desktop
                 let tapCount = 0;
                 let tapTimeout;
                 contentEl.addEventListener('pointerup', (e) => {
@@ -1032,17 +1024,15 @@
             }
             taskRow.appendChild(contentEl);
 
-            // Metadata container
+            // Metadata
             const metaContainer = document.createElement('div');
             metaContainer.className = 'task-meta';
 
-            // Due date
             if (task.dueDate || !isArchived) {
                 const dueEl = document.createElement('span');
                 dueEl.className = 'task-due';
                 dueEl.textContent = task.dueDate || 'due';
                 if (!isArchived) {
-                    // Mobile-friendly: single tap on touch, double-click on desktop
                     let tapCount = 0;
                     let tapTimeout;
                     dueEl.addEventListener('pointerup', (e) => {
@@ -1068,13 +1058,11 @@
                 metaContainer.appendChild(dueEl);
             }
 
-            // Delegated to
             if (task.delegatedTo || (!isArchived && task.status === 'delegated')) {
                 const delegatedEl = document.createElement('span');
                 delegatedEl.className = 'task-delegated';
-                delegatedEl.textContent = task.delegatedTo ? `@${task.delegatedTo}` : '@—';
+                delegatedEl.textContent = task.delegatedTo ? `@${task.delegatedTo}` : '@−';
                 if (!isArchived) {
-                    // Mobile-friendly: single tap on touch, double-click on desktop
                     let tapCount = 0;
                     let tapTimeout;
                     delegatedEl.addEventListener('pointerup', (e) => {
@@ -1105,19 +1093,20 @@
             }
 
             // Archive button
-            const actionBtn = document.createElement('button');
-            actionBtn.className = 'archive-btn';
-            actionBtn.textContent = isArchived ? 'UNARCHIVE' : 'ARCHIVE';
-            actionBtn.onclick = (e) => {
+            const archiveBtn = document.createElement('button');
+            archiveBtn.className = 'archive-btn';
+            archiveBtn.textContent = isArchived ? 'UNARCH' : 'ARCH';
+            archiveBtn.onclick = (e) => {
                 e.stopPropagation();
+                const idx = parseInt(e.target.closest('[data-idx]').dataset.idx);
                 toggleArchive(idx);
             };
-            taskRow.appendChild(actionBtn);
+            taskRow.appendChild(archiveBtn);
 
             return taskRow;
         }
 
-        // Create new task
+        // ========== TASK OPERATIONS ==========
         function createTask(content) {
             if (!content.trim()) return;
             tasks.unshift({
@@ -1134,38 +1123,30 @@
             render();
         }
 
-        // Start inline editing
         function startEdit(idx) {
             const taskRow = document.querySelector(`[data-idx="${idx}"]`);
             const contentEl = taskRow.querySelector('.task-content');
-
             const input = document.createElement('input');
             input.type = 'text';
             input.value = tasks[idx].content;
-
             input.onblur = () => finishEdit(idx, input.value);
             input.onkeydown = (e) => {
                 e.stopPropagation();
                 if (e.key === 'Enter') finishEdit(idx, input.value);
                 if (e.key === 'Escape') render();
             };
-
             contentEl.replaceWith(input);
             input.focus();
             input.select();
         }
 
-        // Finish editing
-        function finishEdit(idx, newContent) {
-            if (newContent.trim()) {
-                tasks[idx].content = newContent.trim();
-            }
+        function finishEdit(idx, value) {
+            tasks[idx].content = value.trim() || tasks[idx].content;
             save();
             render();
             setSelectedTask(idx);
         }
 
-        // Edit field (dueDate or delegatedTo)
         function editField(idx, field) {
             if (field === 'dueDate') {
                 openDatePicker(idx);
@@ -1204,7 +1185,56 @@
             setSelectedTask(idx);
         }
 
-        // Date picker functions
+        function toggleArchive(idx) {
+            tasks[idx].archived = !tasks[idx].archived;
+            save();
+            render();
+        }
+
+        function updateStats() {
+            const activeTasks = tasks.filter(t => !t.archived);
+            const archivedTasks = tasks.filter(t => t.archived);
+
+            document.querySelectorAll('.tab-count').forEach(el => {
+                if (el.id === 'activeCountTab' || el.id === 'activeCountTab2') {
+                    el.textContent = activeTasks.length;
+                } else {
+                    el.textContent = archivedTasks.length;
+                }
+            });
+        }
+
+        function setSelectedTask(idx) {
+            document.querySelectorAll('.task-row.selected').forEach(row => {
+                row.classList.remove('selected');
+            });
+            document.getElementById('newTaskWrapper').classList.remove('selected');
+
+            selectedIsInput = false;
+
+            if (idx !== null && idx >= 0 && idx < tasks.length) {
+                selectedIdx = idx;
+                const taskRow = document.querySelector(`[data-idx="${idx}"]`);
+                if (taskRow) {
+                    taskRow.classList.add('selected');
+                }
+            } else {
+                selectedIdx = null;
+            }
+        }
+
+        function setInputSelected() {
+            document.querySelectorAll('.task-row.selected').forEach(row => {
+                row.classList.remove('selected');
+            });
+            document.getElementById('newTaskWrapper').classList.remove('selected');
+
+            selectedIdx = null;
+            selectedIsInput = true;
+            document.getElementById('newTaskWrapper').classList.add('selected');
+        }
+
+        // ========== DATE PICKER ==========
         function openDatePicker(idx) {
             datePickerTaskIdx = idx;
             const dateInput = document.getElementById('dateInput');
@@ -1232,108 +1262,11 @@
             }
         }
 
-        // Toggle archive state
-        function toggleArchive(idx) {
-            tasks[idx].archived = !tasks[idx].archived;
-            save();
-            render();
-        }
-
-        // Update statistics
-        function updateStats() {
-            const activeTasks = tasks.filter(t => !t.archived);
-            const archivedTasks = tasks.filter(t => t.archived);
-
-            document.getElementById('activeCountTab').textContent = activeTasks.length;
-            document.getElementById('archivedCountTab').textContent = archivedTasks.length;
-        }
-
-        // Switch view between active and archived
-        function switchView(view) {
-            currentView = view;
-
-            // Update tab styling
-            document.querySelectorAll('.view-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelector(`[data-view="${view}"]`).classList.add('active');
-
-            // Clear selection when switching views
-            selectedIdx = null;
-            selectedIsInput = false;
-            setInputSelected();
-
-            render();
-        }
-
-        // Theme toggle
-        function toggleTheme() {
-            document.body.classList.toggle('dark');
-            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-        }
-
-        // Close dropdowns on outside click
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.status-selector')) {
-                document.querySelectorAll('.status-dropdown.open').forEach(d => {
-                    d.classList.remove('open');
-                });
-            }
-            if (!e.target.closest('.date-picker-box') && !e.target.closest('.date-picker-modal')) {
-                if (e.target.id === 'datePickerModal') {
-                    closeDatePicker();
-                }
-            }
-        });
-
-        // Close date picker on Escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('datePickerModal').classList.contains('open')) {
-                closeDatePicker();
-            }
-        });
-
-        // Keyboard shortcuts
-        let selectedIdx = null;
-        let selectedIsInput = false;
-
-        function setSelectedTask(idx) {
-            // Remove previous selection styling
-            document.querySelectorAll('.task-row.selected').forEach(row => {
-                row.classList.remove('selected');
-            });
-            document.getElementById('newTaskWrapper').classList.remove('selected');
-
-            selectedIsInput = false;
-
-            if (idx !== null && idx >= 0 && idx < tasks.length) {
-                selectedIdx = idx;
-                const taskRow = document.querySelector(`[data-idx="${idx}"]`);
-                if (taskRow) {
-                    taskRow.classList.add('selected');
-                }
-            } else {
-                selectedIdx = null;
-            }
-        }
-
-        function setInputSelected() {
-            // Remove previous selection styling
-            document.querySelectorAll('.task-row.selected').forEach(row => {
-                row.classList.remove('selected');
-            });
-            document.getElementById('newTaskWrapper').classList.remove('selected');
-
-            selectedIdx = null;
-            selectedIsInput = true;
-            document.getElementById('newTaskWrapper').classList.add('selected');
-        }
-
+        // ========== KEYBOARD SHORTCUTS ==========
         document.addEventListener('keydown', (e) => {
             const newTaskInput = document.getElementById('newTaskInput');
             const isInputFocused = document.activeElement === newTaskInput;
 
-            // If input is focused, only handle specific keys
             if (isInputFocused) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -1342,19 +1275,16 @@
                     setInputSelected();
                     return;
                 }
-                // Allow arrow keys to navigate away from input
                 if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                     e.preventDefault();
                     newTaskInput.blur();
-                    // Let it fall through to navigation handler
                 } else if (e.key === 'n') {
-                    // Let 'n' fall through to keep focus on input
+                    // Let 'n' fall through to keep focus
                 } else {
                     return;
                 }
             }
 
-            // Task navigation and editing
             const viewTasks = currentView === 'archived'
                 ? tasks.filter(t => t.archived)
                 : tasks.filter(t => !t.archived);
@@ -1371,18 +1301,15 @@
                 case 'v':
                     e.preventDefault();
                     if (selectedIsInput) {
-                        // From input, go to first task
                         if (viewTasks.length > 0) {
                             setSelectedTask(tasks.indexOf(viewTasks[0]));
                         }
                     } else if (selectedTaskIdx !== null) {
-                        // From task, go to next task
                         const currentPos = viewTasks.indexOf(tasks[selectedTaskIdx]);
                         if (currentPos < viewTasks.length - 1) {
                             setSelectedTask(tasks.indexOf(viewTasks[currentPos + 1]));
                         }
                     } else {
-                        // No selection, go to input
                         setInputSelected();
                     }
                     break;
@@ -1395,7 +1322,6 @@
                         if (currentPos > 0) {
                             setSelectedTask(tasks.indexOf(viewTasks[currentPos - 1]));
                         } else {
-                            // First task, go to input
                             setInputSelected();
                         }
                     }
@@ -1412,7 +1338,7 @@
                     break;
 
                 case '+':
-                case '=': // + is shift+= on US keyboard
+                case '=':
                     e.preventDefault();
                     if (selectedTaskIdx !== null) {
                         tasks[selectedTaskIdx].status = 'done';
@@ -1443,111 +1369,100 @@
                     break;
 
                 case 'r':
-                    e.preventDefault();
-                    if (selectedTaskIdx !== null) {
-                        tasks[selectedTaskIdx].status = 'reference';
-                        save();
-                        render();
-                        setSelectedTask(selectedTaskIdx);
+                    if (!isInputFocused) {
+                        e.preventDefault();
+                        if (selectedTaskIdx !== null) {
+                            tasks[selectedTaskIdx].status = 'reference';
+                            save();
+                            render();
+                            setSelectedTask(selectedTaskIdx);
+                        }
+                    }
+                    break;
+
+                case 'd':
+                    if (!isInputFocused) {
+                        e.preventDefault();
+                        if (selectedTaskIdx !== null) {
+                            tasks[selectedTaskIdx].status = 'done';
+                            save();
+                            render();
+                            setSelectedTask(selectedTaskIdx);
+                        }
+                    }
+                    break;
+
+                case '>':
+                    if (!isInputFocused) {
+                        e.preventDefault();
+                        if (selectedTaskIdx !== null) {
+                            tasks[selectedTaskIdx].status = 'waiting';
+                            save();
+                            render();
+                            setSelectedTask(selectedTaskIdx);
+                        }
+                    }
+                    break;
+
+                case '<':
+                    if (!isInputFocused) {
+                        e.preventDefault();
+                        if (selectedTaskIdx !== null) {
+                            tasks[selectedTaskIdx].status = 'delegated';
+                            save();
+                            render();
+                            setSelectedTask(selectedTaskIdx);
+                        }
                     }
                     break;
 
                 case 'e':
-                    e.preventDefault();
-                    if (selectedTaskIdx !== null) {
-                        startEdit(selectedTaskIdx);
-                    }
-                    break;
-
-                case 'a':
-                    e.preventDefault();
-                    if (selectedTaskIdx !== null) {
-                        toggleArchive(selectedTaskIdx);
-                        render();
-                        setSelectedTask(null);
+                    if (!isInputFocused) {
+                        e.preventDefault();
+                        if (selectedTaskIdx !== null) {
+                            startEdit(selectedTaskIdx);
+                        }
                     }
                     break;
 
                 case 't':
-                    e.preventDefault();
-                    if (selectedTaskIdx !== null) {
-                        editField(selectedTaskIdx, 'dueDate');
+                    if (!isInputFocused) {
+                        e.preventDefault();
+                        if (selectedTaskIdx !== null) {
+                            editField(selectedTaskIdx, 'dueDate');
+                        }
                     }
                     break;
 
                 case '@':
-                    e.preventDefault();
-                    if (selectedTaskIdx !== null) {
-                        // Set status to delegated first
-                        tasks[selectedTaskIdx].status = 'delegated';
-                        // Then open prompt to enter person
-                        editField(selectedTaskIdx, 'delegatedTo');
+                    if (!isInputFocused) {
+                        e.preventDefault();
+                        if (selectedTaskIdx !== null) {
+                            tasks[selectedTaskIdx].status = 'delegated';
+                            save();
+                            render();
+                            editField(selectedTaskIdx, 'delegatedTo');
+                        }
                     }
                     break;
 
-                case 'u':
-                    e.preventDefault();
-                    const archivedTab = document.querySelector('[data-view="archived"]');
-                    if (archivedTab) {
-                        archivedTab.click();
+                case 'a':
+                    if (!isInputFocused) {
+                        e.preventDefault();
+                        if (selectedTaskIdx !== null) {
+                            toggleArchive(selectedTaskIdx);
+                            render();
+                            setSelectedTask(null);
+                        }
                     }
-                    break;
-
-                case '?':
-                    e.preventDefault();
-                    showKeyboardHelp();
                     break;
             }
         });
 
-        function showKeyboardHelp() {
-            const help = `
-KEYBOARD SHORTCUTS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-NAVIGATION
-  n ........... New task (focus input)
-  ↓ ........... Select next task
-  ↑ ........... Select previous task
-
-STATUS (DASH-PLUS)
-  - ........... Set ACTIVE (-)
-  + ........... Set DONE (+)
-  → ........... Set WAITING (→)
-  ← ........... Set DELEGATED (←)
-  r ........... Set REFERENCE (Δ)
-
-EDITING
-  e ........... Edit task content
-  t ........... Set due date
-  @ ........... Set delegated to (person)
-  a ........... Archive/Unarchive
-
-? ........... Show this help
-            `;
-            alert(help);
-        }
-
-        // Initialize
-        function init() {
-            load();
-
-            // Load theme preference
-            const theme = localStorage.getItem('theme') || 'light';
-            if (theme === 'dark') {
-                document.body.classList.add('dark');
-            }
-
-            render();
-
-            // Set initial selection to input
-            const newTaskInput = document.getElementById('newTaskInput');
-            setInputSelected();
-            newTaskInput.focus();
-        }
-
-        // Start
-        init();
+        // ========== INITIALIZATION ==========
+        load();
+        render();
+        setInputSelected();
     </script>
 </body>
 </html>
