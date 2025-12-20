@@ -334,6 +334,8 @@
             flex: 1;
             min-width: 0;
             cursor: text;
+            touch-action: manipulation;
+            user-select: none;
         }
 
         .task-content input {
@@ -352,6 +354,23 @@
             color: #ffffff;
         }
 
+        .task-delegated input {
+            padding: 2px 4px;
+            border: 1px solid #000000;
+            background: #ffffff;
+            color: #000000;
+            font-family: inherit;
+            font-size: 15px;
+            min-width: 100px;
+            touch-action: manipulation;
+        }
+
+        body.dark .task-delegated input {
+            border-color: #ffffff;
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+
         /* Task Metadata */
         .task-meta {
             display: flex;
@@ -365,6 +384,8 @@
             cursor: pointer;
             border-bottom: 1px dotted #000000;
             padding: 2px 4px;
+            touch-action: manipulation;
+            user-select: none;
         }
 
         body.dark .task-due {
@@ -375,6 +396,8 @@
             cursor: pointer;
             border-bottom: 1px dotted #000000;
             padding: 2px 4px;
+            touch-action: manipulation;
+            user-select: none;
         }
 
         body.dark .task-delegated {
@@ -864,10 +887,28 @@
             contentEl.className = 'task-content';
             contentEl.textContent = task.content;
             if (!isArchived) {
-                contentEl.ondblclick = (e) => {
-                    e.stopPropagation();
-                    startEdit(idx);
-                };
+                // Mobile-friendly: single tap on touch, double-click on desktop
+                let tapCount = 0;
+                let tapTimeout;
+                contentEl.addEventListener('pointerup', (e) => {
+                    if (e.pointerType === 'touch') {
+                        e.stopPropagation();
+                        tapCount++;
+                        if (tapCount === 1) {
+                            tapTimeout = setTimeout(() => { tapCount = 0; }, 500);
+                        } else if (tapCount === 2) {
+                            clearTimeout(tapTimeout);
+                            tapCount = 0;
+                            startEdit(idx);
+                        }
+                    }
+                });
+                contentEl.addEventListener('dblclick', (e) => {
+                    if (e.pointerType !== 'touch') {
+                        e.stopPropagation();
+                        startEdit(idx);
+                    }
+                });
             }
             taskRow.appendChild(contentEl);
 
@@ -881,10 +922,28 @@
                 dueEl.className = 'task-due';
                 dueEl.textContent = task.dueDate || 'due';
                 if (!isArchived) {
-                    dueEl.ondblclick = (e) => {
-                        e.stopPropagation();
-                        editField(idx, 'dueDate');
-                    };
+                    // Mobile-friendly: single tap on touch, double-click on desktop
+                    let tapCount = 0;
+                    let tapTimeout;
+                    dueEl.addEventListener('pointerup', (e) => {
+                        if (e.pointerType === 'touch') {
+                            e.stopPropagation();
+                            tapCount++;
+                            if (tapCount === 1) {
+                                tapTimeout = setTimeout(() => { tapCount = 0; }, 500);
+                            } else if (tapCount === 2) {
+                                clearTimeout(tapTimeout);
+                                tapCount = 0;
+                                editField(idx, 'dueDate');
+                            }
+                        }
+                    });
+                    dueEl.addEventListener('dblclick', (e) => {
+                        if (e.pointerType !== 'touch') {
+                            e.stopPropagation();
+                            editField(idx, 'dueDate');
+                        }
+                    });
                 }
                 metaContainer.appendChild(dueEl);
             }
@@ -895,10 +954,28 @@
                 delegatedEl.className = 'task-delegated';
                 delegatedEl.textContent = task.delegatedTo ? `@${task.delegatedTo}` : '@—';
                 if (!isArchived) {
-                    delegatedEl.ondblclick = (e) => {
-                        e.stopPropagation();
-                        editField(idx, 'delegatedTo');
-                    };
+                    // Mobile-friendly: single tap on touch, double-click on desktop
+                    let tapCount = 0;
+                    let tapTimeout;
+                    delegatedEl.addEventListener('pointerup', (e) => {
+                        if (e.pointerType === 'touch') {
+                            e.stopPropagation();
+                            tapCount++;
+                            if (tapCount === 1) {
+                                tapTimeout = setTimeout(() => { tapCount = 0; }, 500);
+                            } else if (tapCount === 2) {
+                                clearTimeout(tapTimeout);
+                                tapCount = 0;
+                                editField(idx, 'delegatedTo');
+                            }
+                        }
+                    });
+                    delegatedEl.addEventListener('dblclick', (e) => {
+                        if (e.pointerType !== 'touch') {
+                            e.stopPropagation();
+                            editField(idx, 'delegatedTo');
+                        }
+                    });
                 }
                 metaContainer.appendChild(delegatedEl);
             }
@@ -979,6 +1056,7 @@
 
                 const input = document.createElement('input');
                 input.type = 'text';
+                input.inputMode = 'text';
                 input.value = tasks[idx].delegatedTo || '';
                 input.placeholder = 'person name';
 
