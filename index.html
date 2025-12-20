@@ -780,9 +780,7 @@
                     }
                     break;
 
-                case 'd':
-                case 'δ':
-                case 'Δ':
+                case 'r':
                     e.preventDefault();
                     if (selectedTaskIdx !== null) {
                         tasks[selectedTaskIdx].status = 'reference';
@@ -844,12 +842,12 @@ STATUS (DASH-PLUS)
   + ........... Set DONE (+)
   → ........... Set WAITING (→)
   ← ........... Set DELEGATED (←)
-  d ........... Set REFERENCE (δ)
+  r ........... Set REFERENCE (Δ)
 
 EDITING
   e ........... Edit task content
   t ........... Set due date
-  @ ........... Set delegated to
+  @ ........... Set delegated to (person)
   a ........... Archive/Unarchive
 
 ? ........... Show this help
