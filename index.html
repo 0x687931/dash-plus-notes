@@ -661,6 +661,204 @@
             }
         });
 
+        // Keyboard shortcuts
+        let selectedIdx = null;
+
+        function setSelectedTask(idx) {
+            // Remove previous selection styling
+            document.querySelectorAll('.task-row').forEach(row => {
+                row.style.background = '';
+                row.style.borderColor = '';
+            });
+
+            if (idx !== null && idx >= 0 && idx < tasks.length) {
+                selectedIdx = idx;
+                const taskRow = document.querySelector(`[data-idx="${idx}"]`);
+                if (taskRow) {
+                    taskRow.style.background = '#f0f0f0';
+                    taskRow.style.borderColor = '#000000';
+                    if (document.body.classList.contains('dark')) {
+                        taskRow.style.background = '#1a1a1a';
+                    }
+                }
+            } else {
+                selectedIdx = null;
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const newTaskInput = document.getElementById('newTaskInput');
+            const isInputFocused = document.activeElement === newTaskInput;
+
+            // Always allow focus on input
+            if (e.key === 'n' && !isInputFocused && e.ctrlKey === false && e.metaKey === false) {
+                e.preventDefault();
+                newTaskInput.focus();
+                return;
+            }
+
+            // If input is focused, only handle Enter
+            if (isInputFocused) {
+                if (e.key === 'Enter') {
+                    createTask(newTaskInput.value);
+                    newTaskInput.value = '';
+                    newTaskInput.focus();
+                }
+                return;
+            }
+
+            // Task navigation and editing
+            const activeTasks = tasks.filter(t => !t.archived);
+            const selectedTaskIdx = selectedIdx !== null ? selectedIdx : (activeTasks.length > 0 ? tasks.indexOf(activeTasks[0]) : null);
+
+            switch(e.key) {
+                case 'n':
+                    e.preventDefault();
+                    newTaskInput.focus();
+                    break;
+
+                case 'j':
+                case 'ArrowDown':
+                    e.preventDefault();
+                    if (selectedTaskIdx === null) {
+                        setSelectedTask(tasks.indexOf(activeTasks[0]));
+                    } else {
+                        const currentPos = activeTasks.indexOf(tasks[selectedTaskIdx]);
+                        if (currentPos < activeTasks.length - 1) {
+                            setSelectedTask(tasks.indexOf(activeTasks[currentPos + 1]));
+                        }
+                    }
+                    break;
+
+                case 'k':
+                case 'ArrowUp':
+                    e.preventDefault();
+                    if (selectedTaskIdx !== null) {
+                        const currentPos = activeTasks.indexOf(tasks[selectedTaskIdx]);
+                        if (currentPos > 0) {
+                            setSelectedTask(tasks.indexOf(activeTasks[currentPos - 1]));
+                        }
+                    }
+                    break;
+
+                case '-':
+                    e.preventDefault();
+                    if (selectedTaskIdx !== null) {
+                        tasks[selectedTaskIdx].status = 'active';
+                        save();
+                        render();
+                        setSelectedTask(selectedTaskIdx);
+                    }
+                    break;
+
+                case '+':
+                case '=': // + is shift+= on US keyboard
+                    e.preventDefault();
+                    if (selectedTaskIdx !== null) {
+                        tasks[selectedTaskIdx].status = 'done';
+                        save();
+                        render();
+                        setSelectedTask(selectedTaskIdx);
+                    }
+                    break;
+
+                case 'ArrowRight':
+                    e.preventDefault();
+                    if (selectedTaskIdx !== null) {
+                        tasks[selectedTaskIdx].status = 'waiting';
+                        save();
+                        render();
+                        setSelectedTask(selectedTaskIdx);
+                    }
+                    break;
+
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    if (selectedTaskIdx !== null) {
+                        tasks[selectedTaskIdx].status = 'delegated';
+                        save();
+                        render();
+                        setSelectedTask(selectedTaskIdx);
+                    }
+                    break;
+
+                case 'd':
+                case 'δ':
+                case 'Δ':
+                    e.preventDefault();
+                    if (selectedTaskIdx !== null) {
+                        tasks[selectedTaskIdx].status = 'reference';
+                        save();
+                        render();
+                        setSelectedTask(selectedTaskIdx);
+                    }
+                    break;
+
+                case 'e':
+                    e.preventDefault();
+                    if (selectedTaskIdx !== null) {
+                        startEdit(selectedTaskIdx);
+                    }
+                    break;
+
+                case 'a':
+                    e.preventDefault();
+                    if (selectedTaskIdx !== null) {
+                        toggleArchive(selectedTaskIdx);
+                        render();
+                        setSelectedTask(null);
+                    }
+                    break;
+
+                case 't':
+                    e.preventDefault();
+                    if (selectedTaskIdx !== null) {
+                        editField(selectedTaskIdx, 'dueDate');
+                    }
+                    break;
+
+                case '@':
+                    e.preventDefault();
+                    if (selectedTaskIdx !== null) {
+                        editField(selectedTaskIdx, 'delegatedTo');
+                    }
+                    break;
+
+                case '?':
+                    e.preventDefault();
+                    showKeyboardHelp();
+                    break;
+            }
+        });
+
+        function showKeyboardHelp() {
+            const help = `
+KEYBOARD SHORTCUTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NAVIGATION
+  n ........... New task (focus input)
+  j / ↓ ....... Select next task
+  k / ↑ ....... Select previous task
+
+STATUS (DASH-PLUS)
+  - ........... Set ACTIVE (-)
+  + ........... Set DONE (+)
+  → / Right ... Set WAITING (→)
+  ← / Left .... Set DELEGATED (←)
+  d ........... Set REFERENCE (δ)
+
+EDITING
+  e ........... Edit task content
+  t ........... Set due date
+  @ ........... Set delegated to
+  a ........... Archive/Unarchive
+
+? ........... Show this help
+            `;
+            alert(help);
+        }
+
         // Initialize
         function init() {
             load();
