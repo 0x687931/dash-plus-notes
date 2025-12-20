@@ -14,7 +14,7 @@
         html, body {
             height: 100%;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-size: 16px;
+            font-size: 15px;
             line-height: 1.5;
             background: #ffffff;
             color: #000000;
@@ -34,16 +34,19 @@
         /* Header */
         header {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 2px solid #000000;
-            padding-bottom: 16px;
-            margin-bottom: 40px;
-            gap: 20px;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 0;
+            gap: 0;
+            border: 1px solid #000000;
+            background: #ffffff;
+            min-height: 44px;
         }
 
         body.dark header {
-            border-bottom-color: #ffffff;
+            border-color: #ffffff;
+            background: #000000;
         }
 
         h1 {
@@ -69,6 +72,15 @@
             border-color: #ffffff;
         }
 
+        .theme-divider {
+            border-left: 1px solid #000000;
+            padding-left: 16px;
+        }
+
+        body.dark .theme-divider {
+            border-left-color: #ffffff;
+        }
+
         /* View Tabs */
         .view-tabs {
             display: flex;
@@ -90,7 +102,7 @@
             color: #000000;
             cursor: pointer;
             font-weight: 700;
-            font-size: 13px;
+            font-size: 15px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-family: inherit;
@@ -124,23 +136,15 @@
 
         /* Input */
         #newTaskInput {
-            width: 100%;
-            padding: 12px 16px;
             font-size: 15px;
-            border: none;
-            border-bottom: 1px solid #000000;
-            background: #ffffff;
             color: #000000;
             font-family: inherit;
-            margin-bottom: 0;
             line-height: 1.5;
-            height: auto;
         }
 
         body.dark #newTaskInput {
-            border-bottom-color: #ffffff;
-            background: #000000;
             color: #ffffff;
+            background: #000000;
         }
 
         #newTaskInput::placeholder {
@@ -149,11 +153,6 @@
 
         #newTaskInput:focus {
             outline: none;
-            background: #f0f0f0;
-        }
-
-        body.dark #newTaskInput:focus {
-            background: #1a1a1a;
         }
 
         /* Task List */
@@ -167,12 +166,12 @@
             display: flex;
             align-items: center;
             gap: 16px;
-            padding: 12px 16px;
+            padding: 16px 20px;
             border: 1px solid #000000;
-            border-top: none;
             background: #ffffff;
             line-height: 1.5;
-            min-height: 44px;
+            height: 56px;
+            margin-top: -1px;
         }
 
         body.dark .task-row {
@@ -195,14 +194,41 @@
             color: #000000;
         }
 
+        .task-row.due-today {
+            background: #ffcccc;
+            border-color: #cc0000;
+        }
+
+        body.dark .task-row.due-today {
+            background: #330000;
+            border-color: #ff6666;
+        }
+
+        .task-row.due-soon {
+            background: #ffe6cc;
+            border-color: #ff9900;
+        }
+
+        body.dark .task-row.due-soon {
+            background: #331a00;
+            border-color: #ffaa33;
+        }
+
         #newTaskInput.selected {
             background: #ffff00;
-            border-bottom-color: #000000;
         }
 
         body.dark #newTaskInput.selected {
             background: #ffff00;
             color: #000000;
+        }
+
+        #newTaskWrapper.selected {
+            background: #ffff00;
+        }
+
+        body.dark #newTaskWrapper.selected {
+            background: #ffff00;
         }
 
         /* Status Selector */
@@ -212,16 +238,21 @@
         }
 
         .status-button {
-            padding: 6px 10px;
+            padding: 0;
             border: 1px solid #000000;
             background: #ffffff;
             color: #000000;
             cursor: pointer;
             font-weight: 700;
-            font-size: 13px;
+            font-size: 24px;
             text-align: center;
-            min-width: 70px;
+            width: 44px;
+            height: 44px;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
         }
 
         body.dark .status-button {
@@ -241,42 +272,43 @@
         .status-dropdown {
             display: none;
             position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
+            top: 0;
+            left: 100%;
+            flex-direction: column;
             background: #ffffff;
             border: 1px solid #000000;
-            border-top: none;
-            margin-top: -1px;
+            border-left: none;
+            margin-left: -1px;
             z-index: 10;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            box-shadow: 4px 0 16px rgba(0, 0, 0, 0.2);
         }
 
         body.dark .status-dropdown {
             background: #000000;
             border-color: #ffffff;
-            box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
+            box-shadow: 4px 0 16px rgba(255, 255, 255, 0.1);
         }
 
         .status-dropdown.open {
-            display: block;
+            display: flex;
         }
 
         .status-option {
-            padding: 12px;
-            border-bottom: 1px solid #000000;
+            padding: 12px 16px;
+            border-right: 1px solid #000000;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             gap: 4px;
-        }
-
-        body.dark .status-option {
-            border-bottom-color: #ffffff;
+            white-space: nowrap;
         }
 
         .status-option:last-child {
-            border-bottom: none;
+            border-right: none;
+        }
+
+        body.dark .status-option {
+            border-right-color: #ffffff;
         }
 
         .status-option:hover {
@@ -324,7 +356,7 @@
         .task-meta {
             display: flex;
             gap: 12px;
-            font-size: 12px;
+            font-size: 15px;
             white-space: nowrap;
             flex-shrink: 0;
         }
@@ -382,20 +414,13 @@
 
         /* Archived Section */
         #archivedList {
-            margin-top: 60px;
-            padding-top: 40px;
-            border-top: 2px solid #000000;
-        }
-
-        body.dark #archivedList {
-            border-top-color: #ffffff;
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
         }
 
         #archivedList h2 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            display: none;
             letter-spacing: 0.5px;
         }
 
@@ -494,7 +519,7 @@
             gap: 16px;
             flex: 1;
             min-width: 0;
-            align-items: flex-start;
+            align-items: center;
         }
 
         body.dark .keyboard-help {
@@ -505,10 +530,18 @@
             display: flex;
             gap: 12px;
             align-items: flex-start;
+            padding-right: 16px;
+            border-right: 1px solid #000000;
+        }
+
+        body.dark .keyboard-help-section {
+            border-right-color: #ffffff;
         }
 
         .keyboard-help-section:last-child {
             margin-bottom: 0;
+            border-right: none;
+            padding-right: 0;
         }
 
         .keyboard-help-title {
@@ -521,6 +554,21 @@
             gap: 6px;
             align-items: center;
             text-align: center;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 0;
+            font-family: inherit;
+        }
+
+        .keyboard-help-item:hover .keyboard-help-key {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        body.dark .keyboard-help-item:hover .keyboard-help-key {
+            background: #ffffff;
+            color: #000000;
         }
 
         .keyboard-help-key {
@@ -540,7 +588,7 @@
         }
 
         .keyboard-help-desc {
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -555,26 +603,28 @@
             <div class="keyboard-help" id="keyboardHelp">
                 <div class="keyboard-help-section">
                     <div class="keyboard-help-title">Nav</div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">⊞</span><span class="keyboard-help-desc">New</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">⇅</span><span class="keyboard-help-desc">Move</span></div>
+                    <button class="keyboard-help-item" onclick="document.getElementById('newTaskInput').focus(); setInputSelected();"><span class="keyboard-help-key">n</span><span class="keyboard-help-desc">New</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { const viewTasks = currentView === 'archived' ? tasks.filter(t => t.archived) : tasks.filter(t => !t.archived); const currentPos = viewTasks.indexOf(tasks[selectedIdx]); if(currentPos > 0) { setSelectedTask(tasks.indexOf(viewTasks[currentPos - 1])); } else { setInputSelected(); } }"><span class="keyboard-help-key">^</span><span class="keyboard-help-desc">Up</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { const viewTasks = currentView === 'archived' ? tasks.filter(t => t.archived) : tasks.filter(t => !t.archived); const currentPos = viewTasks.indexOf(tasks[selectedIdx]); if(currentPos < viewTasks.length - 1) { setSelectedTask(tasks.indexOf(viewTasks[currentPos + 1])); } } else if(selectedIsInput) { const viewTasks = currentView === 'archived' ? tasks.filter(t => t.archived) : tasks.filter(t => !t.archived); if(viewTasks.length > 0) { setSelectedTask(tasks.indexOf(viewTasks[0])); } }"><span class="keyboard-help-key">v</span><span class="keyboard-help-desc">Down</span></button>
                 </div>
                 <div class="keyboard-help-section">
                     <div class="keyboard-help-title">Status</div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">▬</span><span class="keyboard-help-desc">Active</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">■</span><span class="keyboard-help-desc">Done</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">▶</span><span class="keyboard-help-desc">Wait</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">◀</span><span class="keyboard-help-desc">Deleg</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">◇</span><span class="keyboard-help-desc">Ref</span></div>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'done'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">d</span><span class="keyboard-help-desc">Done</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'waiting'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">></span><span class="keyboard-help-desc">Wait</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'delegated'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">&lt;</span><span class="keyboard-help-desc">Deleg</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'reference'; save(); render(); setSelectedTask(selectedIdx); }"><span class="keyboard-help-key">r</span><span class="keyboard-help-desc">Ref</span></button>
                 </div>
                 <div class="keyboard-help-section">
                     <div class="keyboard-help-title">Edit</div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">✎</span><span class="keyboard-help-desc">Text</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">◯</span><span class="keyboard-help-desc">Due</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">◈</span><span class="keyboard-help-desc">Assign</span></div>
-                    <div class="keyboard-help-item"><span class="keyboard-help-key">▭</span><span class="keyboard-help-desc">Archive</span></div>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) startEdit(selectedIdx)"><span class="keyboard-help-key">e</span><span class="keyboard-help-desc">Edit</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) editField(selectedIdx, 'dueDate')"><span class="keyboard-help-key">t</span><span class="keyboard-help-desc">Due</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { tasks[selectedIdx].status = 'delegated'; editField(selectedIdx, 'delegatedTo'); }"><span class="keyboard-help-key">@</span><span class="keyboard-help-desc">Assign</span></button>
+                </div>
+                <div class="keyboard-help-section">
+                    <button class="keyboard-help-item" onclick="const archivedTab = document.querySelector('[data-view=\\\"archived\\\"]'); if(archivedTab) archivedTab.click();"><span class="keyboard-help-key">u</span><span class="keyboard-help-desc">(UN)</span></button>
+                    <button class="keyboard-help-item" onclick="if(selectedIdx !== null) { toggleArchive(selectedIdx); render(); setSelectedTask(null); }"><span class="keyboard-help-key">a</span><span class="keyboard-help-desc">ARCHI</span></button>
                 </div>
             </div>
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">◐</button>
         </header>
 
         <div class="view-tabs">
@@ -586,13 +636,17 @@
             </button>
         </div>
 
-        <div style="border: 2px solid #000000; margin-bottom: 40px;">
-            <input
-                id="newTaskInput"
-                type="text"
-                placeholder="Add task..."
-                autocomplete="off"
-            />
+        <div style="border: 1px solid #000000; margin-bottom: 40px;">
+            <div id="newTaskWrapper" style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-bottom: 1px solid #000000; height: 56px; margin-bottom: -1px;">
+                <button style="width: 44px; height: 44px; border: 1px solid #000000; background: #ffffff; cursor: default; font-weight: 700; font-size: 24px; display: flex; align-items: center; justify-content: center; font-family: 'Courier New', monospace;">-</button>
+                <input
+                    id="newTaskInput"
+                    type="text"
+                    placeholder="Add task..."
+                    autocomplete="off"
+                    style="flex: 1; border: none; background: transparent; font-size: 15px; font-family: inherit; padding: 0; height: 44px;"
+                />
+            </div>
             <div id="taskList"></div>
         </div>
         <div id="archivedList" style="display: none;">
@@ -604,7 +658,7 @@
     <div class="date-picker-modal" id="datePickerModal">
         <div class="date-picker-box">
             <h3>Set Due Date</h3>
-            <input type="date" class="date-picker-input" id="dateInput">
+            <input type="date" class="date-picker-input" id="dateInput" onchange="saveDatePicker()">
             <div class="date-picker-buttons">
                 <button class="date-picker-btn" onclick="saveDatePicker()">SAVE</button>
                 <button class="date-picker-btn" onclick="closeDatePicker()">CANCEL</button>
@@ -616,11 +670,11 @@
         // State management
         const STORAGE_KEY = 'dashplus-tasks';
         const STATUS_INFO = {
-            active: { label: 'ACTIVE', desc: 'Current task to do' },
-            waiting: { label: 'WAITING', desc: 'Blocked by external factor' },
-            delegated: { label: 'DELEGATED', desc: 'Assigned to someone else' },
-            reference: { label: 'REFERENCE', desc: 'Data point, not actionable' },
-            done: { label: 'DONE', desc: 'Complete or cancelled' }
+            active: { label: '-', desc: 'Current task to do' },
+            waiting: { label: '>', desc: 'Blocked by external factor' },
+            delegated: { label: '<', desc: 'Assigned to someone else' },
+            reference: { label: 'r', desc: 'Data point, not actionable' },
+            done: { label: '+', desc: 'Complete or cancelled' }
         };
         const STATUS_ORDER = ['active', 'waiting', 'delegated', 'reference', 'done'];
 
@@ -653,18 +707,34 @@
 
             // Render based on current view
             if (currentView === 'active') {
-                activeTasks.forEach((task) => {
-                    const idx = tasks.indexOf(task);
-                    const taskRow = createTaskElement(task, idx);
-                    listEl.appendChild(taskRow);
-                });
+                if (activeTasks.length === 0) {
+                    const emptyEl = document.createElement('div');
+                    emptyEl.style.padding = '12px 16px';
+                    emptyEl.style.color = '#999';
+                    emptyEl.textContent = 'Hit "n" to create a new task';
+                    listEl.appendChild(emptyEl);
+                } else {
+                    activeTasks.forEach((task) => {
+                        const idx = tasks.indexOf(task);
+                        const taskRow = createTaskElement(task, idx);
+                        listEl.appendChild(taskRow);
+                    });
+                }
                 archivedContainerEl.style.display = 'none';
             } else {
-                archivedTasks.forEach((task) => {
-                    const idx = tasks.indexOf(task);
-                    const taskRow = createTaskElement(task, idx, true);
-                    archivedListEl.appendChild(taskRow);
-                });
+                if (archivedTasks.length === 0) {
+                    const emptyEl = document.createElement('div');
+                    emptyEl.style.padding = '12px 16px';
+                    emptyEl.style.color = '#999';
+                    emptyEl.textContent = 'No archived tasks';
+                    archivedListEl.appendChild(emptyEl);
+                } else {
+                    archivedTasks.forEach((task) => {
+                        const idx = tasks.indexOf(task);
+                        const taskRow = createTaskElement(task, idx, true);
+                        archivedListEl.appendChild(taskRow);
+                    });
+                }
                 archivedContainerEl.style.display = archivedTasks.length > 0 ? 'block' : 'none';
             }
 
@@ -681,44 +751,51 @@
             button.textContent = STATUS_INFO[tasks[idx].status].label;
             button.type = 'button';
 
-            const dropdown = document.createElement('div');
-            dropdown.className = 'status-dropdown';
-
-            STATUS_ORDER.forEach(status => {
-                const option = document.createElement('div');
-                option.className = 'status-option';
-                option.innerHTML = `
-                    <div class="status-option-title">${STATUS_INFO[status].label}</div>
-                    <div class="status-option-desc">${STATUS_INFO[status].desc}</div>
-                `;
-                option.onclick = (e) => {
-                    e.stopPropagation();
-                    tasks[idx].status = status;
-                    save();
-                    render();
-                };
-                dropdown.appendChild(option);
-            });
-
             if (!isArchived) {
                 button.onclick = (e) => {
                     e.stopPropagation();
-                    dropdown.classList.toggle('open');
+                    const currentStatus = tasks[idx].status;
+                    const currentIdx = STATUS_ORDER.indexOf(currentStatus);
+                    const nextIdx = (currentIdx + 1) % STATUS_ORDER.length;
+                    tasks[idx].status = STATUS_ORDER[nextIdx];
+                    save();
+                    render();
                 };
             } else {
-                button.style.opacity = '0.5';
                 button.disabled = true;
+                button.style.opacity = '0.5';
             }
 
             container.appendChild(button);
-            container.appendChild(dropdown);
             return container;
+        }
+
+        // Helper function to check due date status
+        function getDueDateClass(dueDate) {
+            if (!dueDate) return '';
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const due = new Date(dueDate);
+            due.setHours(0, 0, 0, 0);
+
+            const diffTime = due - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays < 0 || diffDays === 0) {
+                return 'due-today'; // Overdue or today
+            } else if (diffDays <= 3) {
+                return 'due-soon'; // Within 3 days
+            }
+            return '';
         }
 
         // Create task row element
         function createTaskElement(task, idx, isArchived = false) {
             const taskRow = document.createElement('div');
-            taskRow.className = `task-row ${task.status === 'done' ? 'done' : ''}`;
+            const dueClass = getDueDateClass(task.dueDate);
+            taskRow.className = `task-row ${task.status === 'done' ? 'done' : ''} ${dueClass}`.trim();
             taskRow.dataset.idx = idx;
 
             // Status selector
@@ -831,20 +908,45 @@
             }
             save();
             render();
+            setSelectedTask(idx);
         }
 
         // Edit field (dueDate or delegatedTo)
         function editField(idx, field) {
             if (field === 'dueDate') {
                 openDatePicker(idx);
-            } else {
-                const input = prompt('Delegated to:', tasks[idx][field] || '');
-                if (input !== null) {
-                    tasks[idx][field] = input.trim() || null;
-                    save();
-                    render();
+            } else if (field === 'delegatedTo') {
+                const taskRow = document.querySelector(`[data-idx="${idx}"]`);
+                const metaContainer = taskRow.querySelector('.task-meta');
+                let delegatedEl = taskRow.querySelector('.task-delegated');
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = tasks[idx].delegatedTo || '';
+                input.placeholder = 'person name';
+
+                input.onblur = () => finishDelegatedEdit(idx, input.value);
+                input.onkeydown = (e) => {
+                    e.stopPropagation();
+                    if (e.key === 'Enter') finishDelegatedEdit(idx, input.value);
+                    if (e.key === 'Escape') render();
+                };
+
+                if (delegatedEl) {
+                    delegatedEl.replaceWith(input);
+                } else {
+                    metaContainer.appendChild(input);
                 }
+                input.focus();
+                input.select();
             }
+        }
+
+        function finishDelegatedEdit(idx, value) {
+            tasks[idx].delegatedTo = value.trim() || null;
+            save();
+            render();
+            setSelectedTask(idx);
         }
 
         // Date picker functions
@@ -866,9 +968,13 @@
                 const dateInput = document.getElementById('dateInput');
                 tasks[datePickerTaskIdx].dueDate = dateInput.value || null;
                 save();
+                const taskIdx = datePickerTaskIdx;
+                closeDatePicker();
                 render();
+                setSelectedTask(taskIdx);
+            } else {
+                closeDatePicker();
             }
-            closeDatePicker();
         }
 
         // Toggle archive state
@@ -941,7 +1047,7 @@
             document.querySelectorAll('.task-row.selected').forEach(row => {
                 row.classList.remove('selected');
             });
-            document.getElementById('newTaskInput').classList.remove('selected');
+            document.getElementById('newTaskWrapper').classList.remove('selected');
 
             selectedIsInput = false;
 
@@ -961,10 +1067,11 @@
             document.querySelectorAll('.task-row.selected').forEach(row => {
                 row.classList.remove('selected');
             });
+            document.getElementById('newTaskWrapper').classList.remove('selected');
 
             selectedIdx = null;
             selectedIsInput = true;
-            document.getElementById('newTaskInput').classList.add('selected');
+            document.getElementById('newTaskWrapper').classList.add('selected');
         }
 
         document.addEventListener('keydown', (e) => {
@@ -993,7 +1100,9 @@
             }
 
             // Task navigation and editing
-            const activeTasks = tasks.filter(t => !t.archived);
+            const viewTasks = currentView === 'archived'
+                ? tasks.filter(t => t.archived)
+                : tasks.filter(t => !t.archived);
             const selectedTaskIdx = selectedIdx;
 
             switch(e.key) {
@@ -1004,17 +1113,18 @@
                     break;
 
                 case 'ArrowDown':
+                case 'v':
                     e.preventDefault();
                     if (selectedIsInput) {
                         // From input, go to first task
-                        if (activeTasks.length > 0) {
-                            setSelectedTask(tasks.indexOf(activeTasks[0]));
+                        if (viewTasks.length > 0) {
+                            setSelectedTask(tasks.indexOf(viewTasks[0]));
                         }
                     } else if (selectedTaskIdx !== null) {
                         // From task, go to next task
-                        const currentPos = activeTasks.indexOf(tasks[selectedTaskIdx]);
-                        if (currentPos < activeTasks.length - 1) {
-                            setSelectedTask(tasks.indexOf(activeTasks[currentPos + 1]));
+                        const currentPos = viewTasks.indexOf(tasks[selectedTaskIdx]);
+                        if (currentPos < viewTasks.length - 1) {
+                            setSelectedTask(tasks.indexOf(viewTasks[currentPos + 1]));
                         }
                     } else {
                         // No selection, go to input
@@ -1023,11 +1133,12 @@
                     break;
 
                 case 'ArrowUp':
+                case '^':
                     e.preventDefault();
                     if (selectedTaskIdx !== null) {
-                        const currentPos = activeTasks.indexOf(tasks[selectedTaskIdx]);
+                        const currentPos = viewTasks.indexOf(tasks[selectedTaskIdx]);
                         if (currentPos > 0) {
-                            setSelectedTask(tasks.indexOf(activeTasks[currentPos - 1]));
+                            setSelectedTask(tasks.indexOf(viewTasks[currentPos - 1]));
                         } else {
                             // First task, go to input
                             setInputSelected();
@@ -1116,6 +1227,14 @@
                         tasks[selectedTaskIdx].status = 'delegated';
                         // Then open prompt to enter person
                         editField(selectedTaskIdx, 'delegatedTo');
+                    }
+                    break;
+
+                case 'u':
+                    e.preventDefault();
+                    const archivedTab = document.querySelector('[data-view="archived"]');
+                    if (archivedTab) {
+                        archivedTab.click();
                     }
                     break;
 
