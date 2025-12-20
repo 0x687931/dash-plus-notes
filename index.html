@@ -159,6 +159,26 @@
             text-decoration: line-through;
         }
 
+        .task-row.selected {
+            background: #ffff00;
+            border-color: #000000;
+        }
+
+        body.dark .task-row.selected {
+            background: #ffff00;
+            color: #000000;
+        }
+
+        #newTaskInput.selected {
+            background: #ffff00;
+            border-bottom-color: #000000;
+        }
+
+        body.dark #newTaskInput.selected {
+            background: #ffff00;
+            color: #000000;
+        }
+
         /* Status Selector */
         .status-selector {
             position: relative;
@@ -751,36 +771,47 @@
 
         // Keyboard shortcuts
         let selectedIdx = null;
+        let selectedIsInput = false;
 
         function setSelectedTask(idx) {
             // Remove previous selection styling
-            document.querySelectorAll('.task-row').forEach(row => {
-                row.style.background = '';
-                row.style.borderColor = '';
+            document.querySelectorAll('.task-row.selected').forEach(row => {
+                row.classList.remove('selected');
             });
+            document.getElementById('newTaskInput').classList.remove('selected');
+
+            selectedIsInput = false;
 
             if (idx !== null && idx >= 0 && idx < tasks.length) {
                 selectedIdx = idx;
                 const taskRow = document.querySelector(`[data-idx="${idx}"]`);
                 if (taskRow) {
-                    taskRow.style.background = '#f0f0f0';
-                    taskRow.style.borderColor = '#000000';
-                    if (document.body.classList.contains('dark')) {
-                        taskRow.style.background = '#1a1a1a';
-                    }
+                    taskRow.classList.add('selected');
                 }
             } else {
                 selectedIdx = null;
             }
         }
 
+        function setInputSelected() {
+            // Remove previous selection styling
+            document.querySelectorAll('.task-row.selected').forEach(row => {
+                row.classList.remove('selected');
+            });
+
+            selectedIdx = null;
+            selectedIsInput = true;
+            document.getElementById('newTaskInput').classList.add('selected');
+        }
+
         document.addEventListener('keydown', (e) => {
             const newTaskInput = document.getElementById('newTaskInput');
             const isInputFocused = document.activeElement === newTaskInput;
 
-            // Always allow focus on input
+            // Always allow focus on input with 'n'
             if (e.key === 'n' && !isInputFocused && e.ctrlKey === false && e.metaKey === false) {
                 e.preventDefault();
+                setInputSelected();
                 newTaskInput.focus();
                 return;
             }
@@ -790,30 +821,38 @@
                 if (e.key === 'Enter') {
                     createTask(newTaskInput.value);
                     newTaskInput.value = '';
-                    newTaskInput.focus();
+                    setInputSelected();
                 }
                 return;
             }
 
             // Task navigation and editing
             const activeTasks = tasks.filter(t => !t.archived);
-            const selectedTaskIdx = selectedIdx !== null ? selectedIdx : (activeTasks.length > 0 ? tasks.indexOf(activeTasks[0]) : null);
+            const selectedTaskIdx = selectedIdx;
 
             switch(e.key) {
                 case 'n':
                     e.preventDefault();
+                    setInputSelected();
                     newTaskInput.focus();
                     break;
 
                 case 'ArrowDown':
                     e.preventDefault();
-                    if (selectedTaskIdx === null) {
-                        setSelectedTask(tasks.indexOf(activeTasks[0]));
-                    } else {
+                    if (selectedIsInput) {
+                        // From input, go to first task
+                        if (activeTasks.length > 0) {
+                            setSelectedTask(tasks.indexOf(activeTasks[0]));
+                        }
+                    } else if (selectedTaskIdx !== null) {
+                        // From task, go to next task
                         const currentPos = activeTasks.indexOf(tasks[selectedTaskIdx]);
                         if (currentPos < activeTasks.length - 1) {
                             setSelectedTask(tasks.indexOf(activeTasks[currentPos + 1]));
                         }
+                    } else {
+                        // No selection, go to input
+                        setInputSelected();
                     }
                     break;
 
@@ -823,6 +862,9 @@
                         const currentPos = activeTasks.indexOf(tasks[selectedTaskIdx]);
                         if (currentPos > 0) {
                             setSelectedTask(tasks.indexOf(activeTasks[currentPos - 1]));
+                        } else {
+                            // First task, go to input
+                            setInputSelected();
                         }
                     }
                     break;
