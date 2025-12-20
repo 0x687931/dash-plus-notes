@@ -260,12 +260,37 @@
             }
             taskRow.appendChild(contentEl);
 
-            // Due date (if set)
-            if (task.dueDate) {
+            // Due date (clickable to edit)
+            if (task.dueDate || !isArchived) {
                 const dueEl = document.createElement('span');
                 dueEl.className = 'task-due';
-                dueEl.textContent = task.dueDate;
+                dueEl.textContent = task.dueDate || '📅';
+                dueEl.style.cursor = 'pointer';
+                if (!isArchived) {
+                    dueEl.ondblclick = (e) => {
+                        e.stopPropagation();
+                        editField(idx, 'dueDate');
+                    };
+                    dueEl.title = 'Double-click to edit due date';
+                }
                 taskRow.appendChild(dueEl);
+            }
+
+            // Delegated to (clickable to edit)
+            if (task.delegatedTo || (!isArchived && task.status === 'delegated')) {
+                const delegatedEl = document.createElement('span');
+                delegatedEl.className = 'task-due';
+                delegatedEl.textContent = task.delegatedTo ? `← @${task.delegatedTo}` : '← ?';
+                delegatedEl.style.cursor = 'pointer';
+                delegatedEl.style.color = '#a855f7';
+                if (!isArchived) {
+                    delegatedEl.ondblclick = (e) => {
+                        e.stopPropagation();
+                        editField(idx, 'delegatedTo');
+                    };
+                    delegatedEl.title = 'Double-click to edit who it\'s delegated to';
+                }
+                taskRow.appendChild(delegatedEl);
             }
 
             // Action button (Archive or Unarchive)
@@ -290,6 +315,7 @@
                 content: content.trim(),
                 status: 'active',
                 dueDate: null,
+                delegatedTo: null,
                 archived: false,
                 createdAt: new Date().toISOString()
             });
@@ -325,6 +351,16 @@
             }
             save();
             render();
+        }
+
+        // Edit field (dueDate or delegatedTo)
+        function editField(idx, field) {
+            const input = prompt(`Enter ${field === 'dueDate' ? 'due date (e.g., 2025-01-20)' : 'person name'}:`, tasks[idx][field] || '');
+            if (input !== null) {
+                tasks[idx][field] = input.trim() || null;
+                save();
+                render();
+            }
         }
 
         // Cycle status
