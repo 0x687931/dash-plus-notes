@@ -1055,14 +1055,12 @@
                     setInputSelected();
                     return;
                 }
+                // Allow normal typing in the input field
                 if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                     e.preventDefault();
                     newTaskInput.blur();
-                } else if (e.key === 'n') {
-                    // Let 'n' fall through
-                } else {
-                    return;
                 }
+                return; // All other keys are handled by browser
             }
 
             switch(e.key) {
