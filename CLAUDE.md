@@ -4,112 +4,68 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Dash-Plus Notes is a graph-based task management system with two distinct implementations:
+**Dash-Plus Notes** is a lightweight, single-file task management application with the dash-plus status notation system (-+→←Δ). It's a browser-based app with no backend, all data stored in localStorage.
 
-1. **Single-file HTML application** (`index.html`) - Complete standalone app with inline JavaScript, uses Tailwind CDN, stores data in browser localStorage
-2. **Modular JavaScript library** (`src/` directory) - Reusable modules designed to mirror future REST API, ready for Node.js + SQL backend migration
+**Current Implementation**: Single `index.html` file (~400 lines) with vanilla JavaScript, Tailwind CSS, and localStorage persistence. Simple, focused, production-ready.
 
-These are **independent implementations** that share the same data model concepts but operate separately. The HTML app is production-ready for deployment. The modular library is a POC/reference implementation for future backend work.
+## Architecture
 
-## Core Architecture Concepts
+### Single-File Application (Current)
 
-### Dual Implementation Pattern
+The entire app is contained in `index.html`:
 
-**HTML Application (`index.html`):**
-- Self-contained single-file app (172KB)
-- All state management, rendering, and business logic inline
-- Direct DOM manipulation with no framework
-- localStorage persistence with `dashPlus` state object
-- Includes: task management, RAID tracking, Eisenhower Matrix, floating UI panels, keyboard shortcuts
-- Ready to deploy to static hosting (tiiny.host, GitHub Pages, etc.)
+- **State Management**: Simple tasks array in memory
+- **Persistence**: localStorage key `dashplus-tasks`
+- **Rendering**: Loop through tasks array, regenerate DOM (deterministic)
+- **Events**: Event delegation (click, dblclick handlers on task rows)
+- **Storage**: One localStorage commit per action (save/render cycle)
 
-**Modular Library (`src/`):**
-- Separated concerns: storage layer, graph queries, utilities
-- Designed to be drop-in replaceable with backend API
-- Uses `dashplus:*` prefixed localStorage keys (different from HTML app)
-- Export classes: `TaskStore`, `ProjectStore`, `LinkStore`, `GraphQueries`, `parseNaturalDate`
+**Pattern**:
+```
+User Action → Mutate tasks array → save() to localStorage → render() DOM
+```
 
-### Data Model - Three Entity Types
+### Data Model
 
-The system uses **typed task entities** via a `type` field, not separate collections:
+Each task object has:
+```javascript
+{
+  id: number (Date.now()),
+  content: string,
+  status: 'active' | 'waiting' | 'delegated' | 'reference' | 'done',
+  dueDate: string | null (e.g., "2025-01-20"),
+  delegatedTo: string | null (person name),
+  archived: boolean,
+  createdAt: ISO string
+}
+```
 
-1. **Regular tasks** (`type: 'task'` or undefined) - Standard to-dos
-2. **RAID items** (`type: 'risk' | 'assumption' | 'issue' | 'dependency'`) - Project management entities with additional fields:
-   - Risks: `likelihood`, `impact`, `mitigation`
-   - Assumptions: `validated`, `validationCriteria`
-   - Issues: `severity`, `resolution`
-   - Dependencies: `externalParty`, `expectedDate`
+### Status Symbols (Dash-Plus Notation)
 
-All tasks share the same base properties regardless of type, making status transitions and filtering unified.
-
-### Graph Relationship System
-
-Tasks are nodes, links are edges:
-
-- **Link types**: `waiting`, `delegated`, `references`, `moved`, `blocks`, `related`
-- **Direction matters**: `blocks` vs `blocked-by` are stored as directional relationships
-- **Graph traversal**: `GraphQueries.getBacklinks()`, `getForwardLinks()`, `detectCycles()`, `getBlockingChain()`
-- **Cycle detection**: Prevents circular dependencies, returns paths if cycles found
-- **Task importance**: PageRank-like algorithm based on link count and types
-
-### Status System - Dash-Plus Notation
-
-Symbol-based workflow with two terminology systems:
-
-**Dash-Plus symbols** (default):
-- `-` Active (new task or undone action item)
-- `+` Done (task complete or cancelled)
-- `→` Waiting (blocked by external factor)
-- `←` Delegated (assigned to someone else)
-- `Δ` Reference (data point, no longer actionable)
-
-**5D System** (toggle in UI):
-- Same statuses, different labels: Do, Done, Defer, Delegate, Designate
-
-**Critical**: When changing status away from `delegated` or `waiting`, clear the `delegatedTo` and `waitingOn` fields. The `toggleSelectedDone()` and `cycleStatus()` functions implement this.
-
-### Inline Editing Pattern
-
-Double-click any field to edit in place:
-- Creates inline `<input>` or `<textarea>` element
-- Autocomplete for `delegatedTo` and `waitingOn` fields pulls from existing values
-- State tracks: `editingTaskId`, `editingField` (content, dueDate, delegatedTo, waitingOn, notes)
-- Blur or Enter commits, Escape cancels
-- Rendering is idempotent - re-render after every state change
-
-### UI View Modes
-
-Three distinct view layouts:
-
-1. **List View** - Default task list with inline editing
-2. **Matrix View** - Eisenhower Matrix (Urgent/Important 2x2 grid), drag-drop to change priority
-3. **RAID View** - Specialized layout for Risk/Assumption/Issue/Dependency tracking with risk matrix
-
-State: `state.showMatrixView`, `state.showRaidView` (mutually exclusive booleans)
+| Symbol | Status | Meaning |
+|--------|--------|---------|
+| `-` | active | Current task, to-do |
+| `→` | waiting | Blocked by external factor |
+| `←` | delegated | Assigned to someone else |
+| `Δ` | reference | Data point, not actionable |
+| `+` | done | Complete or cancelled |
 
 ## Development Commands
 
 ```bash
-# Install dependencies
-npm install
+# Start development server (Vite)
+npm run dev
+
+# Run production build
+npm run build
+
+# Preview built version
+npm run preview
 
 # Run tests (Vitest)
 npm test
-
-# Run tests in watch mode
 npm test -- --watch
-
-# Run tests with UI
-npm test:ui
-
-# Run tests with coverage
-npm test -- --coverage
-
-# Start dev server (Vite) - for developing modular library
-npm run dev
-
-# Build (Vite) - bundles modular library
-npm run build
+npm test -- --ui
 
 # Lint
 npm run lint
@@ -118,123 +74,109 @@ npm run lint
 npm run format
 ```
 
-### Running Single Tests
+## Key Files
 
-```bash
-# Run specific test file
-npm test tests/localStorage.test.js
+- **`index.html`** - Entire application (HTML, CSS, JavaScript)
+- **`server.js`** - Express static file server for Fly.io deployment
+- **`package.json`** - Dependencies and scripts
+- **`.dockerignore` / `Dockerfile` / `fly.toml`** - Deployment configuration
 
-# Run specific test file in watch mode
-npm test tests/graphQueries.test.js -- --watch
+## Making Changes
 
-# Run tests matching pattern
-npm test -- --grep "natural date"
-```
+### Adding Features
 
-## Working with the HTML Application
+1. **Read the entire `index.html`** - It's ~400 lines, self-contained
+2. **Understand the flow**: State (tasks array) → save() → render()
+3. **Mutate tasks array** based on user action
+4. **Call save()** to persist (always after mutation)
+5. **Call render()** to update UI (always after save)
+6. **Commit with clear message** about what the feature does
 
-The `index.html` file is the **primary deliverable**. When modifying:
+Example: Adding a priority field would require:
+- Add `priority: null` to new task objects
+- Add UI to render priority
+- Add event handler to edit priority
+- Call save() + render() on change
 
-1. **Read the entire file first** - It's large (172KB) but self-contained
-2. **Key sections** (approximate line numbers, may shift):
-   - Lines 1-550: State initialization, constants (SYMBOLS, TERMINOLOGY, LINK_TYPES)
-   - Lines 550-1500: Core functions (save, load, createTask, updateTask, etc.)
-   - Lines 1500-2000: Rendering functions (render, renderTasks, renderMatrix, renderRaidView)
-   - Lines 2000-2500: Task row creation (createTaskRow, createNewTaskRow)
-   - Lines 2500-3000: Event handlers, keyboard shortcuts
-3. **State object** (`state`) - Single source of truth, persisted to `localStorage.dashPlus`
-4. **Always call `render()`** after state changes to update UI
-5. **Click handlers** use inline `onclick=""` attributes (not addEventListener)
-6. **Escape user input** with `esc()` function to prevent XSS
+### Editing Task Content
 
-### Floating UI Elements
+Tasks are edited inline:
+- Double-click task content → creates input field → blur/Enter to save → Escape to cancel
+- The `startEdit()` function handles this
+- The `finishEdit()` function commits the change
 
-The HTML app has several floating/overlay elements:
+### Inline Field Editing (Due Date, Delegated To)
 
-- **Floating action bar** (`#actionBar`) - Bottom-center, appears when task selected
-- **Floating type selector** (`#typeSelectorPanel`) - Dropdown for task type selection (Task/Risk/Assumption/Issue/Dependency)
-- **Keyboard shortcuts help** (`#keyboardHelp`) - Full-screen overlay, toggle with `?`
-- **Details panel** (`#detailsPanelContainer`) - Right sidebar, collapsible with horizontal slide animation
+Fields like dueDate and delegatedTo use `editField()` which:
+1. Opens a simple prompt()
+2. Updates the field
+3. Calls save() + render()
 
-All use `position: fixed` with `z-index` layering. Close on outside click via document-level event listener.
+To add a new inline field:
+1. Create a span in task row with ondblclick handler
+2. Call `editField(idx, 'fieldName')`
+3. Update createTask() to initialize the field
 
-## Natural Language Date Parsing
+## Testing
 
-The `parseNaturalDate()` utility (both in HTML app and `src/utils/dateParser.js`) supports:
+Current test setup uses Vitest but **there are no tests yet** for the HTML app (it's a static DOM app, hard to test without browser).
 
-- Relative: "tomorrow", "yesterday", "next week", "in 3 days"
-- Day names: "monday", "friday" (next occurrence)
-- Specific: "2025-01-20", "03/15/2025", "tomorrow at 3pm"
-- End of period: "end of week" (Sunday 11:59 PM), "end of month"
-
-Returns `Date` object or `null` if unparseable. Used for `dueDate` field.
-
-## Testing Strategy
-
-Tests are structured to validate both implementations:
-
-- **`html-frontend.test.js`** - Simulates core functions extracted from HTML app
-- **`localStorage.test.js`** - Tests modular TaskStore, ProjectStore, LinkStore
-- **`graphQueries.test.js`** - Tests graph traversal, cycle detection, PageRank
-- **`dateParser.test.js`** - Tests natural language date parsing
-
-Mock localStorage in tests with `LocalStorageMock` class.
+If adding tests:
+- Write tests in `/tests/` directory
+- Use `npm test` to run
+- Focus on business logic (status cycling, archiving, filtering)
 
 ## Deployment
 
-The `index.html` file requires no build process:
+App deploys to Fly.io as a containerized Node.js app:
+- `server.js` serves `index.html` and static files
+- Health check endpoint: `/health`
+- Environment: `PORT` variable (defaults to 8080)
+- Docker: Alpine Node.js image (~44MB)
 
-1. Upload directly to static hosting (tiiny.host, Netlify, Vercel, GitHub Pages)
-2. No environment variables needed
-3. No backend required (all data in browser localStorage)
-4. Tailwind CSS loads from CDN (requires internet connection)
+**Deploy command**: `flyctl deploy`
 
-See `DEPLOYMENT.md` for complete deployment guide.
+## Important Design Decisions
 
-## Migration to Backend (Future)
+1. **No Framework** - Vanilla JavaScript. Why? Simple, fast, no build needed for client.
+2. **Full Re-render** - Every action regenerates task list. Why? Simpler than delta updates, fine for task counts.
+3. **prompt() for Input** - Due date/delegated fields use browser prompt(). Why? Minimal UI, good enough for metadata.
+4. **localStorage Only** - No backend. Why? Single-user app, fast, works offline.
+5. **Archive, Not Delete** - Tasks can be archived and unarchived. Why? Safer UX, keeps history.
 
-The modular library (`src/`) is designed for easy backend migration:
+## Gotchas
 
-1. Replace `LocalStorage` class with HTTP client
-2. Keep same interface: `TaskStore.create()`, `getAll()`, `update()`, etc.
-3. Swap localStorage keys for API endpoints
-4. GraphQueries can run client-side or server-side
+- **Task Index**: Using `tasks.indexOf(task)` to get real index after filtering (for archived view). Inefficient but simple.
+- **Stats Only Count Active** - Total, Active, Done stats exclude archived tasks.
+- **Archived Tasks Readonly** - Archived tasks show but can't be edited/status-cycled (by design).
+- **No Due Date Input Validation** - User can enter any string for due date (including garbage).
 
-See `MIGRATION_GUIDE.md` and `API_DESIGN.md` for migration strategy. SQL schema provided in `SQL_SCHEMA.sql`.
+## Future (DO NOT BUILD YET)
 
-## Important Implementation Details
+The README mentions a planned backend migration. **This is outdated.** Focus on the current HTML app. If backend is needed:
+1. Create Node.js API endpoints
+2. Move storage from localStorage to database
+3. Migrate frontend to fetch API instead of localStorage
 
-### Task Aging and Due Date Visual Feedback
+## Common Tasks
 
-- Tasks > 24 hours old turn grey unless due date overrides
-- Tasks due in ≤ 3 days show red background
-- Done tasks always have strikethrough and reduced opacity
+### Add a new task field
 
-### Keyboard Navigation
+Example: Adding `tags` field to tasks
 
-- Arrow keys (↑↓) or vim keys (j/k) navigate tasks
-- `n` creates new task
-- `d` toggles done/active
-- `s` cycles status (active → waiting → delegated → reference → done)
-- `Enter` edits selected task
-- `Delete` archives task
-- `Esc` clears selection
+1. Update `createTask()` to initialize: `tags: []`
+2. Update task row rendering to show tags
+3. Add edit handler (similar to delegatedTo)
+4. Call save() + render() on change
 
-### Drag and Drop
+### Change a status symbol
 
-- Task list: Reorder tasks by dragging the `⠿` handle
-- Matrix view: Drag tasks between quadrants to change priority
-- Updates `priority` field and re-renders
+Edit `SYMBOLS` object at top of script, update `STATUS_CYCLE` array if needed.
 
-### Auto-Reset After Task Creation
+### Fix styling issues
 
-When creating a task/RAID item, the type selector resets to "Task" after creation. This is intentional UX - users expect one-off RAID items, not batches.
+Edit `<style>` section or add Tailwind classes to task row elements.
 
-## Documentation Files
+### Modify statistics
 
-- **README.md** - User-facing documentation with code examples
-- **DATA_MODEL.md** - Complete TypeScript interfaces for all entities
-- **API_DESIGN.md** - Future REST API specification
-- **MIGRATION_GUIDE.md** - Backend migration strategy
-- **DEPLOYMENT.md** - Deployment instructions for static hosting
-- **SQL_SCHEMA.sql** - PostgreSQL schema for future backend
+Edit `updateStats()` function to change what counts (e.g., count archived tasks separately).
