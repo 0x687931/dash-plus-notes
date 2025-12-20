@@ -656,7 +656,7 @@
         // Create new task
         function createTask(content) {
             if (!content.trim()) return;
-            tasks.push({
+            tasks.unshift({
                 id: Date.now(),
                 content: content.trim(),
                 status: 'active',
@@ -665,6 +665,7 @@
                 archived: false,
                 createdAt: new Date().toISOString()
             });
+            selectedIdx = null;
             save();
             render();
         }
