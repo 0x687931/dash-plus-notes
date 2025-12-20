@@ -808,22 +808,22 @@
             const newTaskInput = document.getElementById('newTaskInput');
             const isInputFocused = document.activeElement === newTaskInput;
 
-            // Always allow focus on input with 'n'
-            if (e.key === 'n' && !isInputFocused && e.ctrlKey === false && e.metaKey === false) {
-                e.preventDefault();
-                setInputSelected();
-                newTaskInput.focus();
-                return;
-            }
-
-            // If input is focused, only handle Enter
+            // If input is focused, handle Enter and allow arrow navigation
             if (isInputFocused) {
                 if (e.key === 'Enter') {
+                    e.preventDefault();
                     createTask(newTaskInput.value);
                     newTaskInput.value = '';
                     setInputSelected();
                 }
-                return;
+                // Allow arrow keys to navigate away from input
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    newTaskInput.blur();
+                    // Let it fall through to navigation handler
+                } else {
+                    return;
+                }
             }
 
             // Task navigation and editing
@@ -998,17 +998,11 @@ EDITING
                 document.body.classList.add('dark');
             }
 
-            // Wire up new task input
-            const newTaskInput = document.getElementById('newTaskInput');
-            newTaskInput.onkeydown = (e) => {
-                if (e.key === 'Enter') {
-                    createTask(newTaskInput.value);
-                    newTaskInput.value = '';
-                    newTaskInput.focus();
-                }
-            };
-
             render();
+
+            // Set initial selection to input
+            const newTaskInput = document.getElementById('newTaskInput');
+            setInputSelected();
             newTaskInput.focus();
         }
 
