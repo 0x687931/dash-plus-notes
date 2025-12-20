@@ -717,7 +717,6 @@
                     newTaskInput.focus();
                     break;
 
-                case 'j':
                 case 'ArrowDown':
                     e.preventDefault();
                     if (selectedTaskIdx === null) {
@@ -730,7 +729,6 @@
                     }
                     break;
 
-                case 'k':
                 case 'ArrowUp':
                     e.preventDefault();
                     if (selectedTaskIdx !== null) {
@@ -838,14 +836,14 @@ KEYBOARD SHORTCUTS
 
 NAVIGATION
   n ........... New task (focus input)
-  j / ↓ ....... Select next task
-  k / ↑ ....... Select previous task
+  ↓ ........... Select next task
+  ↑ ........... Select previous task
 
 STATUS (DASH-PLUS)
   - ........... Set ACTIVE (-)
   + ........... Set DONE (+)
-  → / Right ... Set WAITING (→)
-  ← / Left .... Set DELEGATED (←)
+  → ........... Set WAITING (→)
+  ← ........... Set DELEGATED (←)
   d ........... Set REFERENCE (δ)
 
 EDITING
